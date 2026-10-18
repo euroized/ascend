@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from ascend import data, hardware, stimuli  # noqa: E402
 
 OUT = data.REPO_ROOT / "results" / "phase0" / "reference_rates.json"
+PARTIAL = data.REPO_ROOT / "runs" / "phase0_reference_rates"
 SEEDS = list(range(30))
 T_RUN_S = 1.0
 FILES = {
@@ -85,29 +86,56 @@ def run_condition(cond: dict, target: str) -> dict:
     }
 
 
+def run_and_save(cond: dict, target: str, partial_dir: Path) -> str:
+    """Run one condition and save it on its own, so an interrupted run loses at most the conditions in flight."""
+    started = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    r = run_condition(cond, target)
+    r["started_utc"] = started
+    r["finished_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    tmp = partial_dir / f"{cond['name']}.json.part"
+    tmp.write_text(json.dumps(r) + "\n")
+    tmp.replace(partial_dir / f"{cond['name']}.json")
+    return cond["name"]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--workers", type=int, default=2, help="conditions run in parallel (~3.5 GB RAM each)")
     ap.add_argument("--target", default="cython", help="Brian2 code generation target")
     ap.add_argument("--only", nargs="*", help="run only these condition names")
+    ap.add_argument("--partial-dir", type=Path, default=PARTIAL, help="finished conditions, reused on resume")
     ap.add_argument("--out", type=Path, default=OUT)
     args = ap.parse_args()
 
-    conds = [c for c in CONDITIONS if not args.only or c["name"] in args.only]
-    started = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    args.partial_dir.mkdir(parents=True, exist_ok=True)
+    done = {p.stem for p in args.partial_dir.glob("*.json")}
+    todo = [c for c in CONDITIONS if (not args.only or c["name"] in args.only) and c["name"] not in done]
+    print(f"{len(done)} conditions already done, {len(todo)} to run", flush=True)
     with mp.get_context("spawn").Pool(args.workers) as pool:
-        results = pool.starmap(run_condition, [(c, args.target) for c in conds])
+        jobs = [(c, args.target, args.partial_dir) for c in todo]
+        for name in pool.starmap(run_and_save, jobs, chunksize=1):
+            print(f"saved {name}", flush=True)
+
+    results = {}
+    for c in CONDITIONS:
+        p = args.partial_dir / f"{c['name']}.json"
+        if p.is_file():
+            results[c["name"]] = json.loads(p.read_text())
+    missing = [c["name"] for c in CONDITIONS if c["name"] not in results]
+    if missing:
+        print(f"not writing {args.out}: missing {missing}")
+        return 1
 
     out = {
         "description": "Reference firing rates, Shiu et al. 2024 model (Brian2), per docs/PREREG_PHASE0.md. "
         "rates_hz maps FlyWire root ID -> [mean, std] over trials, nonzero means only.",
-        "started_utc": started,
-        "finished_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "started_utc": min(r["started_utc"] for r in results.values()),
+        "finished_utc": max(r["finished_utc"] for r in results.values()),
         "command": " ".join(sys.argv),
         "workers": args.workers,
         "brian2_target": args.target,
         "hardware": hardware.info(),
-        "conditions": {r["name"]: r for r in results},
+        "conditions": results,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(out, indent=1) + "\n")
