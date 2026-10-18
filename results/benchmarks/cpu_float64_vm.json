@@ -1,0 +1,122 @@
+{
+ "schema": "ascend-bench/2",
+ "created_utc": "2026-10-18T22:52:56+00:00",
+ "command": "python scripts/bench.py --engine ascend --device cpu --dtype float64 --out results/benchmarks/cpu_float64_vm.json",
+ "engine": {
+  "name": "ascend",
+  "implementation": "ASCEND event-driven engine",
+  "device": "cpu",
+  "dtype": "float64",
+  "dt_ms": 0.1
+ },
+ "connectome": {
+  "dataset": "flywire-783",
+  "neurons": 138639,
+  "connections": 15091983,
+  "synapses": 54492922,
+  "sha256": {
+   "Completeness_783.csv": "bbb847a4cc2caaa7a16349722d220c087317b946d148d4d592d94d250617a311",
+   "Connectivity_783.parquet": "efeb23fb99098e9c390f6869969b2a121a2ee92c833cfc45ecb2c1d8e1af0347"
+  },
+  "verified": true
+ },
+ "workload": {
+  "stimulus": "sugar",
+  "n_stimulated": 21,
+  "rate_hz": 150.0,
+  "t_run_s": 1.0,
+  "trials": 5,
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ "timing": {
+  "build_s": 4.81,
+  "warmup_s": 0.0,
+  "run_s": [
+   10.97412,
+   13.0591,
+   10.93157,
+   10.34717,
+   12.54608
+  ],
+  "rtf": [
+   0.09112,
+   0.07657,
+   0.09148,
+   0.09664,
+   0.07971
+  ],
+  "rtf_median": 0.09112,
+  "rtf_min": 0.07657,
+  "rtf_max": 0.09664,
+  "slowdown_vs_realtime": 10.97
+ },
+ "memory": {
+  "host_peak_rss_mib": 1627.4
+ },
+ "fidelity": {
+  "spikes_per_trial": [
+   13421,
+   13533,
+   13497,
+   14160,
+   13331
+  ],
+  "readouts_rate_hz": {
+   "mn9_left": {
+    "mean": 81.8,
+    "std": 5.636
+   },
+   "mn9_right": {
+    "mean": 57.6,
+    "std": 5.389
+   },
+   "jon_dn1": {
+    "mean": 0.0,
+    "std": 0.0
+   },
+   "jon_dn2": {
+    "mean": 0.0,
+    "std": 0.0
+   }
+  }
+ },
+ "selftest": null,
+ "fidelity_suite": null,
+ "same_input": null,
+ "criteria": {
+  "phase": 1,
+  "prereg": "docs/PREREG_PHASE1.md",
+  "S1_rtf_median_ge_1": false,
+  "F_fidelity_suite": null,
+  "G_same_input": null,
+  "consumer_gpu": "reviewed by maintainers from hardware.gpus"
+ },
+ "valid_submission": true,
+ "hardware": {
+  "os": "Linux-6.18.44-fc-v139-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpu": "Intel(R) Xeon(R) Processor",
+  "cpu_logical_cores": 4,
+  "ram_gb": 15.7,
+  "gpus": [],
+  "cuda_runtime": null,
+  "python": "3.13.16",
+  "packages": {
+   "numpy": "2.5.3",
+   "pandas": "3.0.5",
+   "pyarrow": "26.0.0",
+   "brian2": "2.10.1",
+   "cython": "3.1.3"
+  },
+  "repo": {
+   "commit": "4a9f87b8b1163b9a29ebc09cd3ad2b1e91e9c379",
+   "dirty": true
+  }
+ }
+}

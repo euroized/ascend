@@ -59,6 +59,12 @@ class KernelEngine:
         self.consts = tuple(r(x) for x in (decay_g, offset_v, g_to_v, decay_v, params.v_th, params.v_rst, params.w_poi))
         self.reset()
 
+    def device_bytes(self) -> int:
+        """Bytes of every buffer the engine allocates on its device (excludes the CUDA context and graphs)."""
+        bufs = (self.ref, self.is_stim, self.row_ptr, self.post, self.w, self.v, self.g, self.last, self.nr)
+        bufs += (self.ring_buf, self.ring_cnt, self.rec_step, self.rec_neuron, self.rec_cnt, self.base_step, self.rng)
+        return int(sum(b.nbytes for b in bufs))
+
     def reset(self) -> None:
         self._set(self.v, np.full(self.n, self.p.v_0, self.real))
         self._set(self.g, np.zeros(self.n, self.real))

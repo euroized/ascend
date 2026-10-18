@@ -6,6 +6,8 @@ Connectome-constrained fly brain, real-time on one GPU, reverse engineered, then
 
 > **Try it on your GPU.** Run the whole 138,639-neuron fly brain model on your own NVIDIA card and add your result to the public record. One command, about 20 minutes. **[Join in on issue #7](https://github.com/recurse-root/ascend/issues/7)**
 
+**[Technical report](docs/TECHNICAL_REPORT.md)** · **[Demo: one second of fly brain](docs/demo/index.html)** · **[GPU results board](results/community/README.md)**
+
 ASCEND is an open, preregistered project in three phases. Each phase is earned separately, and nothing below is claimed until its preregistered criteria pass on real hardware.
 
 | Phase | Goal | Status |
@@ -64,9 +66,9 @@ The real-time claim (Phase 1) needs at least one consumer-GPU run that passes ev
 | [`ascend/engine/`](ascend/engine) | The ASCEND engine: exact CPU engine (NumPy), CUDA kernels and CUDA Graph host code, CPU emulator of the kernels |
 | [`ascend/reference/`](ascend/reference) | Shiu et al.'s `model.py`, vendored verbatim (hash-pinned), plus a seeded, timed wrapper |
 | [`ascend/`](ascend) | Data fetching and verification, stimulus sets, rates, hardware capture |
-| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`, `check_submission.py` |
+| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`, `check_submission.py`, `baseline_check.py`, `make_demo.py` |
 | [`data/`](data) | Data manifest and stimulus neuron IDs (FlyWire v630 and v783) |
-| [`docs/`](docs) | Preregistrations and design notes |
+| [`docs/`](docs) | Technical report, preregistrations, reports and design notes; [`docs/demo/`](docs/demo) is the demo viewer |
 | [`results/`](results) | Small JSON results, each tied to a preregistration, and the [community GPU results board](results/community/README.md) |
 
 ## Prior art and credits
