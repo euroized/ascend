@@ -40,7 +40,7 @@ python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.jso
 
 ## Benchmark on your hardware
 
-We need runs from as many machines as possible, especially consumer NVIDIA GPUs. Slow results and failures are useful too.
+We need runs from as many machines as possible, especially consumer NVIDIA GPUs. Slow results and failures are useful too. The [call for GPU testers](docs/CALL_FOR_TESTERS.md) explains what the run does and what it takes.
 
 1. Run the GPU command above on an unmodified checkout, with nothing else heavy running.
 2. Open a [Benchmark result](../../issues/new?template=benchmark_result.yml) issue and paste `bench.json` unedited.
