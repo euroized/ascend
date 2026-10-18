@@ -105,6 +105,25 @@ class AscendRunner:
         return time.perf_counter() - t0, s.trains()
 
 
+def memory_info(runner) -> dict:
+    """Peak host memory of this process, and device memory of the ASCEND engine where it has one."""
+    try:
+        import resource  # noqa: PLC0415  (Unix only; ru_maxrss is in KiB on Linux)
+
+        out = {"host_peak_rss_mib": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1)}
+    except ImportError:
+        out = {"host_peak_rss_mib": None}
+    eng = getattr(runner, "eng", None)
+    if hasattr(eng, "device_bytes"):
+        out["engine_buffers_mib"] = round(eng.device_bytes() / 2**20, 1)
+    cp = getattr(eng, "cp", None)
+    if cp is not None:
+        free, total = cp.cuda.runtime.memGetInfo()
+        out["gpu_used_mib"] = round((total - free) / 2**20, 1)
+        out["gpu_total_mib"] = round(total / 2**20, 1)
+    return out
+
+
 def connectome_info(path_con: Path, entries: list[dict] | None) -> dict:
     import pandas as pd  # noqa: PLC0415
 
@@ -225,6 +244,7 @@ def main() -> int:
             "rtf_max": round(max(rtf), 5),
             "slowdown_vs_realtime": round(1 / med, 2),
         },
+        "memory": memory_info(runner),
         "fidelity": {
             "spikes_per_trial": [sum(len(v) for v in sp.values()) for sp in spikes],
             "readouts_rate_hz": {

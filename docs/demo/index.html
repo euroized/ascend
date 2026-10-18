@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One Second of Fly Brain</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A recorded one-second run of the whole-brain FlyWire connectome-constrained model: watch taste and touch input travel through 138,639 neurons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: an imaging-rig viewer. Brain field on the left like a microscope frame, readout channels on the right,
+   population trace across the bottom as the scrubber. Spikes use the "Fire" lookup table from fluorescence imaging. */
+:root {
+  --ink: #0a0e16;
+  --panel: #111725;
+  --rule: #222c40;
+  --text: #dde4f0;
+  --muted: #8592a8;
+  --amber: #f3a93b;
+  --cloud: rgba(150, 168, 205, 0.2);
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--text);
+  font: 15px/1.55 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 40px;
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 18px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 500 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+h1 {
+  margin: 0;
+  font: 800 clamp(30px, 5vw, 52px)/1.02 var(--display);
+  font-stretch: 78%;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.lede { margin: 0; max-width: 68ch; color: var(--muted); }
+.lede strong { color: var(--text); font-weight: 500; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
+.seg button {
+  font: 500 13px/1 var(--body); color: var(--muted); background: transparent; border: 0; border-radius: 5px;
+  padding: 8px 11px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--ink); }
+.seg button:hover:not([aria-pressed="true"]) { color: var(--text); }
+.seg button.null[aria-pressed="true"] { background: var(--amber); }
+button:focus-visible, select:focus-visible, .scrub:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.play {
+  font: 600 13px/1 var(--body); color: var(--ink); background: var(--amber); border: 0; border-radius: 6px;
+  padding: 9px 14px; cursor: pointer; min-width: 74px;
+}
+label.speed { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+select {
+  font: 13px var(--body); color: var(--text); background: var(--panel); border: 1px solid var(--rule);
+  border-radius: 6px; padding: 7px 8px;
+}
+.clock { font: 500 14px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--text); margin-left: auto; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; }
+@media (max-width: 860px) { .stage { grid-template-columns: minmax(0, 1fr); } .clock { margin-left: 0; } }
+.field {
+  position: relative; background: #070a10; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+  aspect-ratio: 16 / 8.6; max-width: 100%;
+}
+.field canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.field .tag { position: absolute; left: 12px; top: 10px; font: 500 11px/1.4 var(--mono); color: var(--muted); letter-spacing: 0.06em; }
+.field .scale { position: absolute; right: 14px; bottom: 12px; font: 11px/1 var(--mono); color: var(--muted); display: grid; justify-items: end; gap: 5px; }
+.field .scale i { display: block; height: 2px; background: var(--muted); }
+.lut { position: absolute; left: 12px; bottom: 12px; display: grid; gap: 4px; font: 11px/1 var(--mono); color: var(--muted); }
+@media (max-width: 520px) { .lut { display: none; } }
+.lut span { display: block; width: 120px; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, #ffffff, #ffe38c, #f5822b, #b52f68, #4a2380, transparent); }
+
+aside { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.card h2 { margin: 0; font: 700 13px/1.2 var(--display); font-stretch: 85%; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.desc { margin: 0; font-size: 14px; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.stat b { display: block; font: 600 22px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.stat small { color: var(--muted); font-size: 12px; }
+.channel { display: grid; grid-template-columns: 92px minmax(0, 1fr) 46px; gap: 8px; align-items: center; }
+.channel .name { font: 500 12px/1.25 var(--mono); }
+.channel .name small { display: block; color: var(--muted); font-size: 11px; }
+.channel canvas { width: 100%; height: 26px; background: #070a10; border-radius: 4px; }
+.channel .rate { font: 12px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+.channel .rate.on { color: var(--amber); }
+ol.top { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: 12px/1.3 var(--mono); }
+ol.top li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+ol.top li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ol.top small { color: var(--muted); }
+
+.trace { display: grid; gap: 6px; }
+.trace .head { display: flex; justify-content: space-between; font: 11px/1 var(--mono); color: var(--muted); letter-spacing: 0.06em; }
+.scrub { position: relative; height: 70px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; cursor: ew-resize; touch-action: none; }
+.scrub canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.notes h3 { margin: 0 0 6px; font: 700 13px/1.2 var(--display); font-stretch: 85%; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); }
+.notes p { margin: 0 0 8px; }
+.notes a { color: var(--amber); }
+pre { margin: 0; overflow-x: auto; font: 12px/1.5 var(--mono); color: var(--text); background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ASCEND · FlyWire v783 · 138,639 neurons</div>
+    <h1>One Second of Fly Brain</h1>
+    <p class="lede">A recorded run of the whole-brain <strong>connectome-constrained model</strong> of the adult fruit fly (Shiu et al. 2024 dynamics, FlyWire wiring). Pick an input and watch it travel through the brain. Every dot is a neuron at its real position. Neurons flash as they spike. The model has <strong>no trained parameters</strong>: what you see comes from the wiring.</p>
+  </header>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Input" id="runs"></div>
+    <div class="seg" role="group" aria-label="View">
+      <button type="button" id="view-front" aria-pressed="true">Front</button>
+      <button type="button" id="view-top" aria-pressed="false">Top</button>
+    </div>
+    <button type="button" class="play" id="play">Pause</button>
+    <label class="speed" for="speed">Speed
+      <select id="speed">
+        <option value="0.02">0.02× (50 s)</option>
+        <option value="0.05" selected>0.05× (20 s)</option>
+        <option value="0.2">0.2× (5 s)</option>
+        <option value="1">1× real time</option>
+      </select>
+    </label>
+    <div class="clock" id="clock" aria-live="off">t = 0.0 ms</div>
+  </div>
+
+  <div class="stage">
+    <div class="field" id="field">
+      <canvas id="brain"></canvas>
+      <div class="tag" id="viewtag">FRONTAL PROJECTION · DORSAL UP</div>
+      <div class="lut">time since spike<span></span>0 → 15 ms</div>
+      <div class="scale"><i id="scalebar" style="width:60px"></i>100 µm</div>
+    </div>
+    <aside>
+      <div class="card">
+        <h2 id="run-label">Input</h2>
+        <p class="desc" id="run-desc"></p>
+        <div class="stats">
+          <div class="stat"><b id="st-spikes">0</b><small>spikes so far</small></div>
+          <div class="stat"><b id="st-active">0</b><small>neurons fired, of 138,639</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Readout neurons</h2>
+        <div id="channels"></div>
+      </div>
+      <div class="card">
+        <h2>Most active downstream</h2>
+        <ol class="top" id="top"></ol>
+      </div>
+    </aside>
+  </div>
+
+  <div class="trace">
+    <div class="head"><span>WHOLE-BRAIN SPIKES PER MS · DRAG TO SCRUB</span><span>0 – 1000 ms</span></div>
+    <div class="scrub" id="scrub" tabindex="0" role="slider" aria-label="Time" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0"><canvas id="pop"></canvas></div>
+  </div>
+
+  <div class="notes">
+    <div>
+      <h3>What you are seeing</h3>
+      <p>The full FlyWire v783 connectome: 138,639 leaky integrate-and-fire neurons and 15,091,983 connections, weighted by synapse count and signed by neurotransmitter, with Shiu et al.'s constants. A set of sensory neurons gets Poisson input at 150 Hz for one simulated second, at a 0.1 ms time step. The faint cloud shows 20,000 randomly chosen neurons for orientation.</p>
+      <p><strong>Scrambled wiring</strong> uses the same neurons and synapse weights, but every connection's target is shuffled. Each neuron keeps its in-degree, out-degree and outgoing weights. The input no longer reaches the feeding motor neuron MN9. It spreads into unrelated olfactory and visual neurons instead.</p>
+    </div>
+    <div>
+      <h3>Reproduce it</h3>
+      <pre>git clone https://github.com/recurse-root/ascend
+cd ascend && pip install -e ".[test]"
+python scripts/fetch_data.py
+python scripts/fetch_data.py --group provenance
+python scripts/make_demo.py</pre>
+      <p>Runs use the CPU float64 engine, which matches the Brian2 reference model spike for spike for the same input, with kick seed 0. The output is deterministic.</p>
+    </div>
+    <div>
+      <h3>Credits</h3>
+      <p>Model: Shiu et al. 2024, <em>Nature</em> 634. Connectome and annotations: FlyWire (Dorkenwald et al. 2024; Schlegel et al. 2024). This is a connectome-constrained model, not a brain upload, and it makes no claim to be conscious.</p>
+      <p><a href="https://github.com/recurse-root/ascend">github.com/recurse-root/ascend</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+  const D = window.ASCEND_DEMO;
+  const STEPS = D.steps, DT = D.dt_ms, TAU = 150; // glow decay, steps (15 ms)
+  const LUT = [[255,255,255],[255,227,140],[245,130,43],[181,47,104],[74,35,128]];
+  const READOUTS = [
+    ["mn9_left", "MN9", "feeding motor"], ["mn9_right", "MN9", "other side"],
+    ["jon_dn1", "DNg62", "descending"], ["jon_dn2", "DNge078", "descending"],
+  ];
+  const $ = (id) => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Decode runs: cumulative steps, per-neuron last-spike state, per-ms population counts, readout trains.
+  const runs = {};
+  for (const [key, r] of Object.entries(D.runs)) {
+    const steps = new Int32Array(r.steps.length);
+    let s = 0;
+    r.steps.forEach((d, i) => { s += d; steps[i] = s; });
+    const who = Int32Array.from(r.who);
+    const pop = new Float32Array(1000);
+    for (const st of steps) pop[Math.min(999, Math.floor(st * DT))] += 1;
+    const trains = {};
+    for (const [name, li] of Object.entries(r.readouts)) {
+      const t = [];
+      if (li >= 0) for (let i = 0; i < who.length; i++) if (who[i] === li) t.push(steps[i]);
+      trains[name] = t;
+    }
+    runs[key] = { ...r, steps, who, pop, trains, last: new Float64Array(r.neurons.length).fill(-1e9) };
+  }
+
+  let cur = "sugar", view = "front", t = 1500, ptr = 0, playing = !reduce, speed = 0.05;
+  const brain = $("brain"), bctx = brain.getContext("2d");
+  const pop = $("pop"), pctx = pop.getContext("2d");
+  const cloudCanvas = document.createElement("canvas");
+  let fit = null;
+
+  function project(x, y, z) { return view === "front" ? [x, y] : [x, z]; }
+  function layout() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    for (const c of [brain, pop]) {
+      const r = c.getBoundingClientRect();
+      c.width = Math.max(1, Math.round(r.width * dpr)); c.height = Math.max(1, Math.round(r.height * dpr));
+    }
+    const [ex, ey] = project(...D.extent);
+    const W = brain.width, H = brain.height, pad = 0.06;
+    const k = Math.min(W * (1 - 2 * pad) / ex, H * (1 - 2 * pad) / ey);
+    fit = { k, ox: (W - ex * k) / 2, oy: (H - ey * k) / 2, dpr, size: Math.min(1, W / dpr / 760) + 0.25 };
+    $("scalebar").style.width = (200 * k / dpr) + "px"; // 100 µm = 200 grid units
+    cloudCanvas.width = W; cloudCanvas.height = H;
+    const cc = cloudCanvas.getContext("2d");
+    cc.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--cloud");
+    const c = D.cloud, sz = Math.max(1, dpr);
+    for (let i = 0; i < c.length; i += 3) {
+      const [px, py] = project(c[i], c[i + 1], c[i + 2]);
+      cc.fillRect(fit.ox + px * k, fit.oy + py * k, sz, sz);
+    }
+    drawPopulation(); draw();
+  }
+
+  function seek(target) {
+    const r = runs[cur];
+    if (target < t) { r.last.fill(-1e9); ptr = 0; }
+    while (ptr < r.steps.length && r.steps[ptr] <= target) { r.last[r.who[ptr]] = r.steps[ptr]; ptr++; }
+    t = target;
+  }
+
+  function lut(f) { // f: 0 (just spiked) .. 1 (faded)
+    const x = Math.min(0.999, f) * (LUT.length - 1), i = Math.floor(x), u = x - i;
+    const a = LUT[i], b = LUT[i + 1];
+    return [0, 1, 2].map((j) => Math.round(a[j] + (b[j] - a[j]) * u));
+  }
+
+  function draw() {
+    const r = runs[cur], W = brain.width, H = brain.height, { k, ox, oy, dpr } = fit;
+    bctx.globalCompositeOperation = "source-over";
+    bctx.clearRect(0, 0, W, H);
+    bctx.drawImage(cloudCanvas, 0, 0);
+    bctx.globalCompositeOperation = "lighter";
+    let fired = 0;
+    for (let i = 0; i < r.neurons.length; i++) {
+      const n = r.neurons[i];
+      if (n[0] < 0) continue;
+      const [px, py] = project(n[0], n[1], n[2]);
+      const X = ox + px * k, Y = oy + py * k, age = t - r.last[i];
+      if (r.last[i] > -1e8) fired++;
+      if (n[3]) { // stimulated: faint amber marker so the input site is always visible
+        bctx.fillStyle = "rgba(243,169,59,0.35)";
+        bctx.fillRect(X - dpr, Y - dpr, 2 * dpr, 2 * dpr);
+      }
+      if (age < 0 || age > TAU) continue;
+      const f = age / TAU, [cr, cg, cb] = lut(f), rad = (1.2 + 3.2 * (1 - f)) * dpr * fit.size;
+      bctx.fillStyle = `rgba(${cr},${cg},${cb},${0.9 * (1 - f) + 0.1})`;
+      bctx.beginPath(); bctx.arc(X, Y, rad, 0, 6.2832); bctx.fill();
+    }
+    $("clock").textContent = `t = ${(t * DT).toFixed(1)} ms`;
+    $("st-spikes").textContent = ptr.toLocaleString("en");
+    $("st-active").textContent = fired.toLocaleString("en");
+    $("scrub").setAttribute("aria-valuenow", Math.round(t * DT));
+    drawChannels(); drawPlayhead();
+  }
+
+  let popImage = null;
+  function drawPopulation() {
+    const r = runs[cur], W = pop.width, H = pop.height;
+    pctx.clearRect(0, 0, W, H);
+    let max = 1; for (const v of r.pop) max = Math.max(max, v);
+    pctx.fillStyle = "rgba(133,146,168,0.55)";
+    const bw = W / 1000;
+    for (let i = 0; i < 1000; i++) {
+      const h = (r.pop[i] / max) * (H - 14);
+      pctx.fillRect(i * bw, H - h - 2, Math.max(1, bw), h);
+    }
+    pctx.fillStyle = "rgba(133,146,168,0.9)";
+    pctx.font = `${10 * fit.dpr}px "IBM Plex Mono", monospace`;
+    pctx.fillText(`peak ${max} / ms`, 6 * fit.dpr, 12 * fit.dpr);
+    popImage = pctx.getImageData(0, 0, W, H);
+  }
+  function drawPlayhead() {
+    if (!popImage) return;
+    pctx.putImageData(popImage, 0, 0);
+    const x = (t / STEPS) * pop.width;
+    pctx.fillStyle = "#f3a93b";
+    pctx.fillRect(x - fit.dpr, 0, 2 * fit.dpr, pop.height);
+  }
+
+  function buildChannels() {
+    const box = $("channels"); box.innerHTML = "";
+    for (const [key, name, sub] of READOUTS) {
+      const row = document.createElement("div"); row.className = "channel";
+      row.innerHTML = `<div class="name">${name}<small>${sub}</small></div><canvas data-k="${key}"></canvas><div class="rate" data-r="${key}"></div>`;
+      box.appendChild(row);
+    }
+  }
+  function drawChannels() {
+    const r = runs[cur];
+    for (const c of document.querySelectorAll(".channel canvas")) {
+      const dpr = fit.dpr, w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr);
+      if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+      const g = c.getContext("2d"), train = r.trains[c.dataset.k];
+      g.clearRect(0, 0, w, h);
+      let n = 0;
+      for (const s of train) {
+        if (s > t) break;
+        n++;
+        const age = t - s, f = Math.min(1, age / 400), [cr, cg, cb] = lut(f * 0.6);
+        g.fillStyle = `rgb(${cr},${cg},${cb})`;
+        g.fillRect((s / STEPS) * w, 3 * dpr, Math.max(1, dpr), h - 6 * dpr);
+      }
+      g.fillStyle = "rgba(243,169,59,0.8)";
+      g.fillRect((t / STEPS) * w, 0, dpr, h);
+      const el = document.querySelector(`[data-r="${c.dataset.k}"]`);
+      el.textContent = train.length ? `${train.length} Hz` : "silent";
+      el.classList.toggle("on", train.length >= 10);
+    }
+  }
+
+  function selectRun(key) {
+    cur = key;
+    const r = runs[key];
+    for (const b of $("runs").children) b.setAttribute("aria-pressed", String(b.dataset.k === key));
+    $("run-label").textContent = r.label;
+    $("run-desc").textContent = `${r.description} ${r.spikes.toLocaleString("en")} spikes from ${r.active.toLocaleString("en")} neurons in 1 s.`;
+    $("top").innerHTML = r.top.map((x) => `<li><span>${x.type} <small>${x.class}</small></span><span>${x.spikes} Hz</span></li>`).join("");
+    const target = t; t = Infinity; seek(target);
+    drawPopulation(); draw();
+  }
+  for (const [key, r] of Object.entries(runs)) {
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.k = key; b.textContent = r.label;
+    if (r.wiring !== "real") b.className = "null";
+    b.addEventListener("click", () => selectRun(key));
+    $("runs").appendChild(b);
+  }
+  function setView(v) {
+    view = v;
+    $("view-front").setAttribute("aria-pressed", String(v === "front"));
+    $("view-top").setAttribute("aria-pressed", String(v === "top"));
+    $("viewtag").textContent = v === "front" ? "FRONTAL PROJECTION · DORSAL UP" : "DORSAL PROJECTION · ANTERIOR UP";
+    layout();
+  }
+  $("view-front").addEventListener("click", () => setView("front"));
+  $("view-top").addEventListener("click", () => setView("top"));
+  $("speed").addEventListener("change", (e) => { speed = parseFloat(e.target.value); });
+  function setPlaying(p) { playing = p; $("play").textContent = p ? "Pause" : "Play"; if (p) last = performance.now(); }
+  $("play").addEventListener("click", () => setPlaying(!playing));
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space" && e.target === document.body) { e.preventDefault(); setPlaying(!playing); }
+  });
+  const scrub = $("scrub");
+  function scrubTo(ev) {
+    const rect = scrub.getBoundingClientRect();
+    seek(Math.round(Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width)) * STEPS)); draw();
+  }
+  scrub.addEventListener("pointerdown", (e) => { scrub.setPointerCapture(e.pointerId); setPlaying(false); scrubTo(e); });
+  scrub.addEventListener("pointermove", (e) => { if (scrub.hasPointerCapture(e.pointerId)) scrubTo(e); });
+  scrub.addEventListener("keydown", (e) => {
+    const d = { ArrowLeft: -100, ArrowRight: 100 }[e.key];
+    if (d) { e.preventDefault(); setPlaying(false); seek(Math.max(0, Math.min(STEPS, t + d))); draw(); }
+  });
+
+  let last = performance.now();
+  function frame(now) {
+    if (playing) {
+      const adv = ((now - last) / 1000) * speed * (1000 / DT);
+      let next = t + adv;
+      if (next > STEPS) { next = 0; t = Infinity; }
+      seek(next); draw();
+    }
+    last = now;
+    requestAnimationFrame(frame);
+  }
+
+  buildChannels();
+  layout();
+  selectRun("sugar");
+  new ResizeObserver(() => layout()).observe($("field"));
+  setPlaying(playing);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -132,3 +132,14 @@ def test_selftest_passes_on_emulated_kernels():
 def test_reference_event_runner_without_stimulus(tiny_connectome):
     empty = np.array([], dtype=int)
     assert brian2_ref.run_events(*tiny_connectome, [], empty, empty, n_steps=200, target="numpy") == {}
+
+
+def test_device_bytes_counts_every_buffer():
+    net = Network.from_arrays(4, np.array([0, 1, 2]), np.array([1, 2, 3]), np.array([1, -1, 2]), 0.275e-3)
+    eng = emu.EmulatedEngine(net, Params.reference(), [0], rec_cap=1000)
+    n, d = 4, Params.reference().delay_steps
+    per_neuron = n * (4 + 1 + 4 + 4 + 8 + 1)  # ref, is_stim, v, g, last, nr
+    csr = (n + 1) * 8 + 3 * (4 + 4)  # row_ptr; post and w for 3 synapses
+    ring = (d + 1) * n * 4 + (d + 1) * 4
+    expected = per_neuron + csr + ring + 1000 * 12 + 4 + 8 + 16  # spike record, rec_cnt, base_step, rng
+    assert eng.device_bytes() == expected

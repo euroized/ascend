@@ -27,6 +27,21 @@ Preregistration: [`docs/PREREG_PHASE1.md`](../docs/PREREG_PHASE1.md). Report: [`
 | [`phase1/sameinput_delay17.json`](phase1/sameinput_delay17.json) | `scripts/sameinput_check.py` | G-neg-delay: fails (as required) |
 | [`phase1/sameinput_weight95.json`](phase1/sameinput_weight95.json) | `scripts/sameinput_check.py` | G-neg-weight: fails (as required) |
 
+## Real wiring against matched null networks
+
+Preregistration: [`docs/PREREG_BASELINES.md`](../docs/PREREG_BASELINES.md). Write-up: [`docs/TECHNICAL_REPORT.md`](../docs/TECHNICAL_REPORT.md), section 7.
+
+| File | Produced by | Contents |
+|---|---|---|
+| [`baselines/null_networks.json`](baselines/null_networks.json) | `scripts/baseline_check.py --summarize` | Real network and 9 null networks (weight-shuffled, rewired, random; 3 seeds each), 3 conditions × 10 trials. Real 6/6; every null 4/6. Claim holds |
+
+## Build-VM benchmarks (descriptive)
+
+| File | Produced by | Contents |
+|---|---|---|
+| [`benchmarks/cpu_float64_vm.json`](benchmarks/cpu_float64_vm.json) | `scripts/bench.py --engine ascend --device cpu --dtype float64` | RTF median 0.091, peak host memory 1,627 MiB |
+| [`benchmarks/cpu_float32_vm.json`](benchmarks/cpu_float32_vm.json) | `scripts/bench.py --engine ascend --device cpu --dtype float32` | RTF median 0.149, peak host memory 1,648 MiB |
+
 ## Community benchmarks
 
 Benchmark runs submitted through the [Benchmark result](../../../issues/new?template=benchmark_result.yml) issue template are stored in [`community/`](community) and listed on the [results board](community/README.md). Every submission is listed, whatever its outcome.
