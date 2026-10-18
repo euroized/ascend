@@ -20,12 +20,14 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8", "ruff>=0.6"]
+cuda = ["cupy-cuda12x>=13"]
 
 [tool.setuptools.packages.find]
 include = ["ascend*"]
 
 [tool.setuptools.package-data]
 "ascend.reference" = ["LICENSE.shiu"]
+"ascend.engine" = ["kernels.cu"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

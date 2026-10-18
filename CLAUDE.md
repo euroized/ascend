@@ -26,9 +26,10 @@ None of these is achieved until its preregistered criteria pass. The README only
 | Path | Contents |
 |---|---|
 | `ascend/reference/shiu_model.py` | Verbatim upstream reference model. Never edit it; a test pins its hash. |
-| `ascend/reference/brian2_ref.py` | Seeded, timed wrapper around the reference model. |
+| `ascend/reference/brian2_ref.py` | Seeded, timed wrapper around the reference model, and the event-replay runner for exact checks. |
+| `ascend/engine/` | Phase 1 engine: `cpu.py` (exact NumPy engine), `kernels.cu` (GPU kernels), `cuda.py` and `kernel_engine.py` (CUDA host code), `emulate.py` (kernels on the CPU for tests). |
 | `ascend/` | Data fetching, stimuli, analysis, hardware capture, synthetic test networks. |
-| `scripts/` | `fetch_data.py`, `bench.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`. |
+| `scripts/` | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`. |
 | `data/` | Manifest and stimulus ID tables (committed). Fetched data (ignored). |
 | `results/` | Small JSON results, each tied to a prereg. |
 | `docs/` | Preregistrations and design notes. |
