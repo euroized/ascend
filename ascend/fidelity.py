@@ -94,7 +94,7 @@ def compare(counts: np.ndarray, ref: dict, fly_ids: np.ndarray) -> dict:
             "check": f"F3 neurons outside tolerance: {int((~ok[compared]).sum())} of {int(compared.sum())} "
             f"(max {MAX_FAIL_FRAC:.0%})",
             "value": round(frac, 5),
-            "pass": frac <= MAX_FAIL_FRAC,
+            "pass": bool(frac <= MAX_FAIL_FRAC),
         }
     )
 
@@ -104,7 +104,7 @@ def compare(counts: np.ndarray, ref: dict, fly_ids: np.ndarray) -> dict:
         {
             "check": f"F4 Pearson r of rates over {int(active.sum())} active neurons >= {MIN_PEARSON}",
             "value": round(r_p, 6),
-            "pass": r_p >= MIN_PEARSON,
+            "pass": bool(r_p >= MIN_PEARSON),
         }
     )
 
@@ -115,7 +115,7 @@ def compare(counts: np.ndarray, ref: dict, fly_ids: np.ndarray) -> dict:
             "check": f"F5 total spikes per trial: {spikes_e.mean():.0f} vs {spikes_r.mean():.0f} "
             f"(tol {Z * se_tot + 0.01 * spikes_r.mean():.0f})",
             "value": round(d_tot, 1),
-            "pass": abs(d_tot) <= Z * se_tot + 0.01 * spikes_r.mean(),
+            "pass": bool(abs(d_tot) <= Z * se_tot + 0.01 * spikes_r.mean()),
         }
     )
     return {**out, "checks": checks}

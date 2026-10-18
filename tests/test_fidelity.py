@@ -1,5 +1,7 @@
 """The statistical fidelity criteria, on hand-made reference data."""
 
+import json
+
 import numpy as np
 
 from ascend import fidelity
@@ -27,7 +29,8 @@ LAM = np.array([0.0, 5.0, 40.0, 90.0, 12.0, 150.0])
 
 def test_same_process_passes():
     out = fidelity.compare(trials(LAM, 1), reference(trials(LAM, 2)), IDS)
-    assert all(c["pass"] for c in out["checks"]), out
+    assert all(c["pass"] is True for c in out["checks"]), out
+    json.dumps(out)  # results are saved as JSON
 
 
 def test_shifted_rates_fail():
