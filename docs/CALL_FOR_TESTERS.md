@@ -4,7 +4,7 @@ ASCEND simulates a connectome-constrained model of the entire adult fruit fly br
 
 ## Where things stand
 
-- **The engine is exact.** Fed the same input as the published reference model (Brian2), it emits the **same spikes, spike for spike**, on the full brain, for every stimulus tested.
+- **The model is reproduced exactly.** In double precision on the CPU, the ASCEND engine fed the same input as the published reference model (Brian2) emits the **same spikes, spike for spike**, on the full brain, for every stimulus tested. The GPU engine is checked against it on your own machine.
 - **Reference speed:** the original model runs at **0.19× real time** on a 4-core machine. One simulated second takes about 5 seconds.
 - **The ASCEND GPU engine** runs each 1,000-step chunk of simulation as a single CUDA Graph. We predict roughly **7–15× real time** on a mid-range card such as an RTX 3060, 4060 or 4070. The prediction is preregistered, meaning it was written down before any GPU measurement.
 - **Results board:** no GPU results are published yet. The first submissions will set the numbers.
