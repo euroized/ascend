@@ -121,4 +121,29 @@ Every file stays under 1 MB, and each is reported in `docs/REPORT_PHASE1.md`, hi
 
 ## Amendments
 
-None yet.
+### Amendment 1 (2026-10-18): add a same-input tier (G)
+
+**Reason.** On the build VM, the negative control F-neg-delay (synaptic delay 17 steps instead of 18) **passed** the F tier. Under this preregistration, that declares F inadequate: rate-based checks cannot detect a 0.1 ms timing error. The miss stands and is reported in `docs/REPORT_PHASE1.md`. F is kept unchanged as an end-to-end statistical check, with this blind spot documented.
+
+**Approval.** The maintainer delegated the decision ("do what's best") on 2026-10-18, after reviewing the miss and this proposal.
+
+**Disclosure.** An exploratory pilot run after the F results informed this amendment. It used kick seed 0 and permutation seeds 1 and 2 (`REPORT_PHASE1.md` §4). The formal runs below use different seeds, given here before they are run.
+
+**G tier: same input, same spikes.** Two engines receive identical counter-based hash kicks (`ascend/engine/rng.py`): kick seed **1**, 150 Hz, the full v783 brain, 1.0 s (10,000 steps). The workloads are sugar, bitter and JONs. The metric is the Jaccard index of the two sets of (step, neuron) spike events. **Pass: Jaccard ≥ 0.99 in all 3 workloads.** Implemented in `ascend/sameinput.py` and run by `scripts/sameinput_check.py`.
+
+**G controls (build VM, CPU float32).** Each compares a variant with the CPU float32 engine as built:
+
+| Run | Variant | Required |
+|---|---|---|
+| G-pos | synaptic input summed in a random order each step (permutation seeds 3 and 4), which is the only freedom a correct GPU run has | Jaccard ≥ 0.99 in all 3 workloads, both seeds |
+| G-neg-delay | delay 17 steps | Jaccard < 0.99 in all 3 workloads |
+| G-neg-weight | weights × 0.95 | Jaccard < 0.99 in all 3 workloads |
+
+If G-pos fails or a G negative control passes, G is inadequate as well. That would be reported as a miss, and the claim could not be made without a further amendment.
+
+**Claim rule, as amended.** Rules 1 and 4 are unchanged.
+
+- **Rule 2** becomes: F-pos and F-f32 pass, F-neg-weight fails, and all three G controls behave as required.
+- **Rule 3** becomes: a consumer-GPU submission of `python scripts/bench.py --engine ascend --device cuda --fidelity` shows `S1_rtf_median_ge_1`, `F_fidelity_suite` and `G_same_input` all true in the same JSON. For G, the GPU engine is compared with the CPU float32 engine on the tester's own machine.
+
+**Unchanged:** the E tier, the F checks and thresholds, the S tier, consumer-GPU definition and valid-submission rules.
