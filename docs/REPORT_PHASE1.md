@@ -76,7 +76,7 @@ Randomising the order of summation leaves float32 spike trains unchanged. That i
 
 ## 5. Amendment 1 (applied 2026-10-18, commit `97d6427`)
 
-Add a **G tier: same input, same spikes**. The GPU engine (float32) and the CPU engine (float32) get identical hash-RNG kicks on the full brain for 1.0 s, for sugar, bitter and JONs at 150 Hz with seed 0. **Pass:** Jaccard of (step, neuron) spike events ≥ 0.99 in all 3 workloads. `bench.py --fidelity` would run it on the tester's machine. The CPU reference takes about 10–30 s per workload.
+The amendment adds a **G tier: same input, same spikes**. The GPU engine (float32) and the CPU engine (float32) get identical hash-RNG kicks on the full brain for 1.0 s, for sugar, bitter and JONs at 150 Hz with kick seed 1 (the pilot used seed 0). **Pass:** Jaccard of (step, neuron) spike events ≥ 0.99 in all 3 workloads. `bench.py --fidelity` runs it on the tester's machine. The CPU reference takes about 15–25 s per workload.
 
 With G, the fidelity chain becomes:
 
@@ -86,9 +86,11 @@ With G, the fidelity chain becomes:
 
 F stays as an end-to-end statistical check on the GPU, with its timing blind spot documented.
 
-The amendment would also preregister **G controls on the build VM**. The CPU float32 engine as built against permuted summation order must pass. The delay-17 and weight × 0.95 variants must fail. These are formal reruns of the pilot comparisons, with the outcome rule fixed in advance.
+It also preregisters **G controls on the build VM**:
+- The CPU float32 engine with permuted summation order (seeds 3 and 4, fresh) must pass.
+- The delay-17 and weight × 0.95 variants must fail.
 
-The claim rule would require E, F-pos, F-f32, the G controls, and a consumer-GPU submission passing S1, F and G, plus an independent reproduction.
+The amended claim rule requires E, F-pos, F-f32, F-neg-weight failing, and the G controls behaving as required. It also requires a consumer-GPU submission passing S1, F and G, plus an independent reproduction.
 
 ### Formal G controls (fresh seeds: kicks seed 1, permutations 3 and 4)
 
