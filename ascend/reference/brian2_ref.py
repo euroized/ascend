@@ -104,6 +104,41 @@ class Session:
         return Trial(seed=seed, t_run_s=self.t_run_s, run_s=run_s, spikes=_spikes(self.spk_mon))
 
 
+def run_events(
+    path_comp: Path,
+    path_con: Path,
+    exc: list[int],
+    event_steps: np.ndarray,
+    event_positions: np.ndarray,
+    *,
+    n_steps: int,
+    target: str = "numpy",
+) -> dict[int, np.ndarray]:
+    """Run the reference network with explicit stimulus kicks instead of Poisson draws.
+
+    Kick k reaches neuron exc[event_positions[k]] at step event_steps[k], in the same schedule
+    slot and with the same weight and refractoriness gating as upstream PoissonInput. The
+    network is built by upstream create_model() and poi() (at 0 Hz, which sets the stimulated
+    neurons' refractory period to 0 as usual). This lets another engine be fed identical input
+    and compared spike for spike.
+    """
+    b2.prefs.codegen.target = target
+    p = params(n_steps * float(b2.defaultclock.dt), r_poi_hz=0.0)
+    neu, syn, spk_mon = shiu.create_model(str(path_comp), str(path_con), p)
+    poi_inp, neu = shiu.poi(neu, list(exc), [], p)
+    net = b2.Network(neu, syn, spk_mon, *poi_inp)
+    if len(exc):
+        w_poi_mv = float(p["w_syn"] * p["f_poi"] / b2.mV)
+        gen = b2.SpikeGeneratorGroup(
+            len(exc), np.asarray(event_positions, dtype=int), np.asarray(event_steps) * b2.defaultclock.dt
+        )
+        kick = b2.Synapses(gen, neu, on_pre=f"v_post += {w_poi_mv!r}*mvolt", delay=0 * b2.ms)
+        kick.connect(i=np.arange(len(exc)), j=np.asarray(exc, dtype=int))
+        net.add(gen, kick)
+    net.run(n_steps * b2.defaultclock.dt)
+    return _spikes(spk_mon)
+
+
 def run_trial(
     path_comp: Path,
     path_con: Path,

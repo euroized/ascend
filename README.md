@@ -8,8 +8,8 @@ ASCEND is an open, preregistered project in three phases. Each phase is earned s
 
 | Phase | Goal | Status |
 |---|---|---|
-| 0. Baseline | Wrap the Shiu et al. 2024 reference model, reproduce sugar → MN9, measure its speed | In review ([prereg](docs/PREREG_PHASE0.md)) |
-| 1. Boot | Whole FlyWire v783 brain (138,639 neurons, 54.5 M synapses) at real-time factor ≥ 1.0 on one consumer NVIDIA GPU, fidelity-matched to the reference | Not started |
+| 0. Baseline | Wrap the Shiu et al. 2024 reference model, reproduce sugar → MN9, measure its speed | **Complete.** Sugar → MN9 reproduced (14/14 preregistered checks). Reference RTF 0.189 on a 4-vCPU VM ([report](docs/REPORT_PHASE0.md), [prereg](docs/PREREG_PHASE0.md)) |
+| 1. Boot | Whole FlyWire v783 brain (138,639 neurons, 54.5 M synapses) at real-time factor ≥ 1.0 on one consumer NVIDIA GPU, fidelity-matched to the reference | In progress: engine built, awaiting GPU runs ([prereg](docs/PREREG_PHASE1.md), [design](docs/PHASE1_ENGINE_PROPOSAL.md)) |
 | 2. Decompile | Perturb every neuron and map its effect on every other (an in-silico effectome), validated against known pathways | Not started |
 | 3. Ascend | Wiring frozen; evolve the learning rules, gated and tested against frozen and random-rule controls | Not started |
 
@@ -29,11 +29,20 @@ python scripts/bench.py --out bench.json
 
 `bench.py` builds the full 138,639-neuron network and stimulates the 21 sugar-sensing gustatory neurons at 150 Hz. It runs 5 one-second trials and writes the real-time factor (simulated seconds per wall-clock second) together with your hardware and software, recorded automatically. Building the network takes a few minutes and about 4 GB of RAM.
 
+The default engine is the Brian2 reference model. To benchmark the ASCEND engine on an NVIDIA GPU (CUDA 12, compute capability 6.0 or newer):
+
+```bash
+pip install -e ".[cuda]"
+python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.json
+```
+
+`--fidelity` adds the preregistered fidelity suite: 4 conditions × 30 trials, compared with the Phase 0 reference rates. It takes a few minutes on a GPU.
+
 ## Benchmark on your hardware
 
 We need runs from as many machines as possible, especially consumer NVIDIA GPUs. Slow results and failures are useful too.
 
-1. Run the quick start above on an unmodified checkout, with nothing else heavy running.
+1. Run the GPU command above on an unmodified checkout, with nothing else heavy running.
 2. Open a [Benchmark result](../../issues/new?template=benchmark_result.yml) issue and paste `bench.json` unedited.
 
 The real-time claim (Phase 1) needs at least one consumer-GPU run that passes every preregistered criterion, plus an independent reproduction on different hardware.
@@ -50,9 +59,10 @@ The real-time claim (Phase 1) needs at least one consumer-GPU run that passes ev
 
 | Path | Contents |
 |---|---|
+| [`ascend/engine/`](ascend/engine) | The ASCEND engine: exact CPU engine (NumPy), CUDA kernels and CUDA Graph host code, CPU emulator of the kernels |
 | [`ascend/reference/`](ascend/reference) | Shiu et al.'s `model.py`, vendored verbatim (hash-pinned), plus a seeded, timed wrapper |
 | [`ascend/`](ascend) | Data fetching and verification, stimulus sets, rates, hardware capture |
-| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py` |
+| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py` |
 | [`data/`](data) | Data manifest and stimulus neuron IDs (FlyWire v630 and v783) |
 | [`docs/`](docs) | Preregistrations and design notes |
 | [`results/`](results) | Small JSON results, each tied to a preregistration |

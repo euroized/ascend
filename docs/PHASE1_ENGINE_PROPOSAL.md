@@ -1,6 +1,11 @@
 # Phase 1 engine: design proposal
 
-**Status:** proposal, awaiting maintainer approval. No engine code exists yet. The Phase 1 criteria will be set in `docs/PREREG_PHASE1.md` before any engine measurement.
+**Status:** approved by the maintainer on 2026-10-18. Implemented in `ascend/engine/`. The Phase 1 criteria are in [`PREREG_PHASE1.md`](PREREG_PHASE1.md).
+
+> **Note added 2026-10-18 during implementation.** Brian2 applies synaptic input (`g += w`) and Poisson kicks only to **non-refractory** targets, and the step a neuron spikes in already counts as refractory. Input arriving during the refractory period is dropped, not stored. The engine does the same. The kernel design below also changed in three places:
+> - The reset is fused into `update`, which is valid because nothing else touches a refractory neuron within that step.
+> - A third small kernel clears the ring slot just delivered.
+> - Stimulus kicks come from a counter-based hash (`ascend/engine/rng.py`) instead of Philox, so CPU and GPU produce identical kicks.
 
 ## Goal
 

@@ -10,8 +10,9 @@ body:
         Run it on a clean checkout with nothing else heavy running:
 
         ```bash
+        pip install -e ".[cuda]"
         python scripts/fetch_data.py
-        python scripts/bench.py --out bench.json
+        python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.json
         ```
   - type: input
     id: hardware
@@ -26,7 +27,7 @@ body:
     attributes:
       label: Command
       description: The exact command you ran.
-      placeholder: python scripts/bench.py --out bench.json
+      placeholder: python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.json
     validations:
       required: true
   - type: textarea
