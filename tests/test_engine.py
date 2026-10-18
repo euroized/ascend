@@ -127,3 +127,8 @@ def test_selftest_passes_on_emulated_kernels():
 
     r = selftest.run("emulate", n_steps=600)
     assert r["ok"] and r["identical"] and r["spikes_cpu"] > 0
+
+
+def test_reference_event_runner_without_stimulus(tiny_connectome):
+    empty = np.array([], dtype=int)
+    assert brian2_ref.run_events(*tiny_connectome, [], empty, empty, n_steps=200, target="numpy") == {}
