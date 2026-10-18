@@ -38,9 +38,9 @@ python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.jso
 
 `--fidelity` adds the preregistered fidelity suite: 4 conditions × 30 trials, compared with the Phase 0 reference rates. It takes a few minutes on a GPU.
 
-## Benchmark on your hardware
+## Run it on your GPU
 
-We need runs from as many machines as possible, especially consumer NVIDIA GPUs. Slow results and failures are useful too. The [call for GPU testers](docs/CALL_FOR_TESTERS.md) explains what the run does and what it takes.
+Try it on your own GPU and add your result to the public record. Every card and every result counts: fast, slow or failed. [Run it on your GPU](docs/CALL_FOR_TESTERS.md) explains what the run does and what it takes.
 
 1. Run the GPU command above on an unmodified checkout, with nothing else heavy running.
 2. Open a [Benchmark result](../../issues/new?template=benchmark_result.yml) issue and paste `bench.json` unedited.
