@@ -60,9 +60,19 @@ class Session:
     exc, exc2 and slnc are neuron indices (rows of the completeness file).
     """
 
-    def __init__(self, path_comp: Path, path_con: Path, exc: list[int], *, exc2: list[int] = (),
-                 slnc: list[int] = (), t_run_s: float = 1.0, r_poi_hz: float | None = None,
-                 r_poi2_hz: float | None = None, target: str = "cython"):
+    def __init__(
+        self,
+        path_comp: Path,
+        path_con: Path,
+        exc: list[int],
+        *,
+        exc2: list[int] = (),
+        slnc: list[int] = (),
+        t_run_s: float = 1.0,
+        r_poi_hz: float | None = None,
+        r_poi2_hz: float | None = None,
+        target: str = "cython",
+    ):
         b2.prefs.codegen.target = target
         self.params = params(t_run_s, r_poi_hz, r_poi2_hz)
         self.t_run_s = t_run_s
@@ -94,9 +104,19 @@ class Session:
         return Trial(seed=seed, t_run_s=self.t_run_s, run_s=run_s, spikes=_spikes(self.spk_mon))
 
 
-def run_trial(path_comp: Path, path_con: Path, exc: list[int], *, seed: int, exc2: list[int] = (),
-              slnc: list[int] = (), t_run_s: float = 1.0, r_poi_hz: float | None = None,
-              r_poi2_hz: float | None = None, target: str = "cython") -> Trial:
+def run_trial(
+    path_comp: Path,
+    path_con: Path,
+    exc: list[int],
+    *,
+    seed: int,
+    exc2: list[int] = (),
+    slnc: list[int] = (),
+    t_run_s: float = 1.0,
+    r_poi_hz: float | None = None,
+    r_poi2_hz: float | None = None,
+    target: str = "cython",
+) -> Trial:
     """One trial on a freshly built network, as upstream run_trial() does, plus seeding."""
     b2.prefs.codegen.target = target
     p = params(t_run_s, r_poi_hz, r_poi2_hz)

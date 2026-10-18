@@ -55,7 +55,7 @@ def gpus() -> list[dict]:
     if not out:
         return []
     keys = ["name", "driver", "memory_mib", "compute_capability", "pcie_gen", "pcie_width"]
-    return [dict(zip(keys, (v.strip() for v in line.split(",")))) for line in out.splitlines()]
+    return [dict(zip(keys, (v.strip() for v in line.split(",")), strict=False)) for line in out.splitlines()]
 
 
 def cuda_runtime() -> str | None:

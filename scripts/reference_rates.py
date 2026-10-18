@@ -22,8 +22,10 @@ from ascend import data, hardware, stimuli  # noqa: E402
 OUT = data.REPO_ROOT / "results" / "phase0" / "reference_rates.json"
 SEEDS = list(range(30))
 T_RUN_S = 1.0
-FILES = {783: ("Completeness_783.csv", "Connectivity_783.parquet"),
-         630: ("Completeness_630.csv", "Connectivity_630.parquet")}
+FILES = {
+    783: ("Completeness_783.csv", "Connectivity_783.parquet"),
+    630: ("Completeness_630.csv", "Connectivity_630.parquet"),
+}
 
 # Frozen by docs/PREREG_PHASE0.md. Rates in Hz; None means the upstream default (150 Hz).
 CONDITIONS = [
@@ -69,9 +71,15 @@ def run_condition(cond: dict, target: str) -> dict:
         "warmup_s": round(s.warmup_s, 2),
         "run_s": [round(t.run_s, 3) for t in trials],
         "spikes_per_trial": [t.n_spikes for t in trials],
-        "readouts": {k: {"flywire_id": i, "rate_hz_mean": round(float(mean[idx[i]]), 4),
-                         "rate_hz_std": round(float(std[idx[i]]), 4),
-                         "spike_counts": counts[:, idx[i]].tolist()} for k, i in readouts.items()},
+        "readouts": {
+            k: {
+                "flywire_id": i,
+                "rate_hz_mean": round(float(mean[idx[i]]), 4),
+                "rate_hz_std": round(float(std[idx[i]]), 4),
+                "spike_counts": counts[:, idx[i]].tolist(),
+            }
+            for k, i in readouts.items()
+        },
         "n_active": int(len(active)),
         "rates_hz": {str(fly_ids[i]): [round(float(mean[i]), 4), round(float(std[i]), 4)] for i in active},
     }
@@ -92,7 +100,7 @@ def main() -> int:
 
     out = {
         "description": "Reference firing rates, Shiu et al. 2024 model (Brian2), per docs/PREREG_PHASE0.md. "
-                       "rates_hz maps FlyWire root ID -> [mean, std] over trials, nonzero means only.",
+        "rates_hz maps FlyWire root ID -> [mean, std] over trials, nonzero means only.",
         "started_utc": started,
         "finished_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "command": " ".join(sys.argv),

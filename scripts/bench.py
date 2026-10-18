@@ -62,8 +62,9 @@ def main() -> int:
     tmp = None
     if args.synthetic:
         tmp = tempfile.TemporaryDirectory()
-        path_comp, path_con = synthetic.write(Path(tmp.name), n_neurons=args.synthetic,
-                                              n_connections=20 * args.synthetic, seed=args.seed)
+        path_comp, path_con = synthetic.write(
+            Path(tmp.name), n_neurons=args.synthetic, n_connections=20 * args.synthetic, seed=args.seed
+        )
         exc = list(range(min(10, args.synthetic))) if args.stimulus != "none" else []
         readouts, entries, dataset = {}, None, f"synthetic-{args.synthetic}"
     else:
@@ -75,8 +76,7 @@ def main() -> int:
         dataset = "flywire-783"
 
     print(f"building {dataset} network ...", flush=True)
-    s = brian2_ref.Session(path_comp, path_con, exc, t_run_s=args.duration, r_poi_hz=args.rate_hz,
-                           target=args.target)
+    s = brian2_ref.Session(path_comp, path_con, exc, t_run_s=args.duration, r_poi_hz=args.rate_hz, target=args.target)
     s.warmup()
     print(f"build {s.build_s:.1f}s, warmup {s.warmup_s:.1f}s", flush=True)
 
@@ -94,18 +94,37 @@ def main() -> int:
         "schema": SCHEMA,
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "command": " ".join(["python", *sys.argv]),
-        "engine": {"name": args.engine, "implementation": "Shiu et al. 2024 model, Brian2 runtime",
-                   "brian2_target": args.target, "dt_ms": 0.1},
+        "engine": {
+            "name": args.engine,
+            "implementation": "Shiu et al. 2024 model, Brian2 runtime",
+            "brian2_target": args.target,
+            "dt_ms": 0.1,
+        },
         "connectome": {"dataset": dataset, "neurons": s.n_neurons, **connectome_info(path_con, entries)},
-        "workload": {"stimulus": args.stimulus, "n_stimulated": len(exc), "rate_hz": args.rate_hz,
-                     "t_run_s": args.duration, "trials": args.trials, "seeds": seeds},
-        "timing": {"build_s": round(s.build_s, 3), "warmup_s": round(s.warmup_s, 3),
-                   "run_s": [round(t.run_s, 4) for t in trials], "rtf": [round(x, 5) for x in rtf],
-                   "rtf_median": round(med, 5), "rtf_min": round(min(rtf), 5), "rtf_max": round(max(rtf), 5),
-                   "slowdown_vs_realtime": round(1 / med, 2)},
-        "fidelity": {"spikes_per_trial": [t.n_spikes for t in trials],
-                     "readouts_rate_hz": {k: {"mean": round(float(mean[i]), 3), "std": round(float(std[i]), 3)}
-                                          for k, i in readouts.items()}},
+        "workload": {
+            "stimulus": args.stimulus,
+            "n_stimulated": len(exc),
+            "rate_hz": args.rate_hz,
+            "t_run_s": args.duration,
+            "trials": args.trials,
+            "seeds": seeds,
+        },
+        "timing": {
+            "build_s": round(s.build_s, 3),
+            "warmup_s": round(s.warmup_s, 3),
+            "run_s": [round(t.run_s, 4) for t in trials],
+            "rtf": [round(x, 5) for x in rtf],
+            "rtf_median": round(med, 5),
+            "rtf_min": round(min(rtf), 5),
+            "rtf_max": round(max(rtf), 5),
+            "slowdown_vs_realtime": round(1 / med, 2),
+        },
+        "fidelity": {
+            "spikes_per_trial": [t.n_spikes for t in trials],
+            "readouts_rate_hz": {
+                k: {"mean": round(float(mean[i]), 3), "std": round(float(std[i]), 3)} for k, i in readouts.items()
+            },
+        },
         "criteria": {"phase": 0, "note": "Phase 0 baseline, no pass/fail. Phase 1 criteria: docs/PREREG_PHASE1.md."},
         "valid_submission": not args.synthetic,
         "hardware": hardware.info(),

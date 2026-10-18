@@ -18,4 +18,5 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: pip install -e ".[test]"
+      - run: ruff check . && ruff format --check .
       - run: pytest -q

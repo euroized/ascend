@@ -1,8 +1,8 @@
 """Fetch the pinned input data and verify every file against data/manifest.json.
 
-    python scripts/fetch_data.py                      # connectome (core), ~104 MB
-    python scripts/fetch_data.py --group provenance   # v630 data + annotations, used by map_stimuli.py
-    python scripts/fetch_data.py --verify             # check files already present, download nothing
+python scripts/fetch_data.py                      # connectome (core), ~104 MB
+python scripts/fetch_data.py --group provenance   # v630 data + annotations, used by map_stimuli.py
+python scripts/fetch_data.py --verify             # check files already present, download nothing
 """
 
 import argparse

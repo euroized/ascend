@@ -1,4 +1,7 @@
 # ascend
+
+[![CI](https://github.com/recurse-root/ascend/actions/workflows/ci.yml/badge.svg)](https://github.com/recurse-root/ascend/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Connectome-constrained fly brain, real-time on one GPU, reverse engineered, then learning to improve how it learns.
 
 ASCEND is an open, preregistered project in three phases. Each phase is earned separately, and nothing below is claimed until its preregistered criteria pass on real hardware.
