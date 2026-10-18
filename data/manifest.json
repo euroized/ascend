@@ -1,0 +1,50 @@
+{
+  "description": "Pinned inputs for ASCEND. Fetch with scripts/fetch_data.py; every file is verified against its SHA-256. Nothing here is committed to the repository.",
+  "connectome": {
+    "dataset": "FlyWire v783 (public release), as packaged for the Shiu et al. 2024 reference model",
+    "neurons": 138639,
+    "connections": 15091983,
+    "synapses": 54492922
+  },
+  "groups": {
+    "core": [
+      {
+        "name": "Completeness_783.csv",
+        "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/Completeness_783.csv",
+        "bytes": 3327347,
+        "sha256": "bbb847a4cc2caaa7a16349722d220c087317b946d148d4d592d94d250617a311",
+        "source": "philshiu/Drosophila_brain_model @ 91bdd1e (MIT); neuron list derived from FlyWire v783"
+      },
+      {
+        "name": "Connectivity_783.parquet",
+        "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/Connectivity_783.parquet",
+        "bytes": 100804642,
+        "sha256": "efeb23fb99098e9c390f6869969b2a121a2ee92c833cfc45ecb2c1d8e1af0347",
+        "source": "philshiu/Drosophila_brain_model @ 91bdd1e (MIT); signed synapse counts derived from FlyWire v783"
+      }
+    ],
+    "provenance": [
+      {
+        "name": "Completeness_630.csv",
+        "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/2023_03_23_completeness_630_final.csv",
+        "bytes": 3057611,
+        "sha256": "e6b71e17671a9bdb05f55e4bc6774640a1418cb7a05125e0fc994ad40f9bfdfb",
+        "source": "philshiu/Drosophila_brain_model @ 91bdd1e (MIT); FlyWire v630, the version used in Shiu et al. 2024"
+      },
+      {
+        "name": "Connectivity_630.parquet",
+        "url": "https://raw.githubusercontent.com/philshiu/Drosophila_brain_model/91bdd1e7dcf193f3e7ca5a8933497fcef63b7960/2023_03_23_connectivity_630_final.parquet",
+        "bytes": 86630944,
+        "sha256": "94db8c650533bc36ffa3223f2e62325d5648b8d6bd31c3a4e1c804628c7557b3",
+        "source": "philshiu/Drosophila_brain_model @ 91bdd1e (MIT); FlyWire v630"
+      },
+      {
+        "name": "flywire_neuron_annotations.tsv",
+        "url": "https://raw.githubusercontent.com/flyconnectome/flywire_annotations/a83b2776d60d5764cef36b927f5f9679c16c47a2/supplemental_files/Supplemental_file1_neuron_annotations.tsv",
+        "bytes": 31720298,
+        "sha256": "b214970b55d2fbe0853bba536fdcb9e28730f4eb7ab06f600491df795da683cd",
+        "source": "flyconnectome/flywire_annotations @ a83b277 (Schlegel et al. 2024); v783 cell types and sides"
+      }
+    ]
+  }
+}
