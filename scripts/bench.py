@@ -147,6 +147,13 @@ def main() -> int:
         readouts = {k: idx[i] for k, i in stimuli.readouts().items()}
         dataset = "flywire-783"
 
+    selftest = None
+    if args.engine == "ascend" and args.device != "cpu":
+        from ascend.engine import selftest as st  # noqa: PLC0415
+
+        selftest = st.run(args.device)
+        print(f"self-test vs CPU engine: {'OK' if selftest['ok'] else 'MISMATCH'} {selftest}", flush=True)
+
     print(f"building {dataset} network for engine {args.engine} ...", flush=True)
     runner = (ReferenceRunner if args.engine == "reference" else AscendRunner)(path_comp, path_con, exc, args)
     warmup_s = runner.warmup()
@@ -215,6 +222,7 @@ def main() -> int:
                 k: {"mean": round(float(mean[i]), 3), "std": round(float(std[i]), 3)} for k, i in readouts.items()
             },
         },
+        "selftest": selftest,
         "fidelity_suite": fidelity,
         "criteria": criteria,
         "valid_submission": not args.synthetic,

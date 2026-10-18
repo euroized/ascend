@@ -119,3 +119,11 @@ def test_kernels_compile_with_nvrtc():
             ptx = ptx.decode() if isinstance(ptx, bytes | bytearray) else ptx
             for kernel in ("update", "deliver", "clear", "advance"):
                 assert f".entry {kernel}(" in ptx
+
+
+@needs_cxx
+def test_selftest_passes_on_emulated_kernels():
+    from ascend.engine import selftest
+
+    r = selftest.run("emulate", n_steps=600)
+    assert r["ok"] and r["identical"] and r["spikes_cpu"] > 0
