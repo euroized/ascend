@@ -1,0 +1,100 @@
+{
+ "prereg": "docs/PREREG_PHASE0.md",
+ "rules": {
+  "R1": true,
+  "R2": true,
+  "R3": true,
+  "R4": true
+ },
+ "verdict": "REPRODUCED",
+ "checks": [
+  {
+   "rule": "R1",
+   "check": "v630 sugar 200 Hz: mn9_left 92.77 vs published 93.27 (tol 5.0 Hz)",
+   "value": -0.5,
+   "pass": true
+  },
+  {
+   "rule": "R1",
+   "check": "v630 sugar 200 Hz: mn9_right 62.30 vs published 61.80 (tol 5.0 Hz)",
+   "value": 0.5,
+   "pass": true
+  },
+  {
+   "rule": "R1",
+   "check": "v630 sugar 100 Hz: mn9_left 69.57 vs published 67.03 (tol 5.0 Hz)",
+   "value": 2.533,
+   "pass": true
+  },
+  {
+   "rule": "R1",
+   "check": "v630 sugar 100 Hz: mn9_right 51.13 vs published 48.63 (tol 5.0 Hz)",
+   "value": 2.5,
+   "pass": true
+  },
+  {
+   "rule": "R2",
+   "check": "v783 sugar 150 Hz: mn9_left 84.33 Hz >= 10.0",
+   "value": 84.3333,
+   "pass": true
+  },
+  {
+   "rule": "R2",
+   "check": "v783 sugar 150 Hz: mn9_right 59.33 Hz >= 10.0",
+   "value": 59.3333,
+   "pass": true
+  },
+  {
+   "rule": "R2",
+   "check": "v783 no stimulus: zero spikes in every trial",
+   "value": 0,
+   "pass": true
+  },
+  {
+   "rule": "R2",
+   "check": "v783 bitter 150 Hz: mn9_left 0.00 Hz < 1.0",
+   "value": 0.0,
+   "pass": true
+  },
+  {
+   "rule": "R2",
+   "check": "v783 bitter 150 Hz: mn9_right 0.00 Hz < 1.0",
+   "value": 0.0,
+   "pass": true
+  },
+  {
+   "rule": "R3",
+   "check": "v783 sugar 200 Hz: mn9_left 93.27 vs published v630 93.27 (+0.0%, tol +-25%)",
+   "value": 0.0,
+   "pass": true
+  },
+  {
+   "rule": "R3",
+   "check": "v783 sugar 200 Hz: mn9_right 61.60 vs published v630 61.80 (-0.3%, tol +-25%)",
+   "value": -0.0032,
+   "pass": true
+  },
+  {
+   "rule": "R3",
+   "check": "v783 sugar 100 Hz: mn9_left 68.70 vs published v630 67.03 (+2.5%, tol +-25%)",
+   "value": 0.0249,
+   "pass": true
+  },
+  {
+   "rule": "R3",
+   "check": "v783 sugar 100 Hz: mn9_right 50.73 vs published v630 48.63 (+4.3%, tol +-25%)",
+   "value": 0.0432,
+   "pass": true
+  },
+  {
+   "rule": "R4",
+   "check": "v783 mn9_left rises with sugar rate: 68.70 < 84.33 < 93.27",
+   "value": [
+    68.7,
+    84.3333,
+    93.2667
+   ],
+   "pass": true
+  }
+ ]
+}
