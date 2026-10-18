@@ -1,17 +1,15 @@
-# Call for GPU testers: can a whole fly brain model run in real time on a gaming GPU?
+# Run a whole fly brain model on your own GPU
 
-ASCEND simulates a connectome-constrained model of the entire adult fruit fly brain: **138,639 neurons and 15 million connections**. The wiring comes from the [FlyWire](https://flywire.ai) connectome, and the dynamics from the [Shiu et al. 2024](https://www.nature.com/articles/s41586-024-07763-9) model. We want to know whether one consumer NVIDIA GPU can simulate it at least as fast as real time.
-
-The engine is built and checked. The answer now depends on your hardware.
+ASCEND simulates a connectome-constrained model of the entire adult fruit fly brain: **138,639 neurons and 15 million connections**. The wiring comes from the [FlyWire](https://flywire.ai) connectome, and the dynamics from the [Shiu et al. 2024](https://www.nature.com/articles/s41586-024-07763-9) model. It is built to run on a single consumer NVIDIA GPU with one command, and you're invited to try it on yours and add your result to the public record.
 
 ## Where things stand
 
-- **The CPU engine is exact.** Fed the same input as the published reference model (Brian2), our engine emits the **same spikes, spike for spike**, on the full brain over 1 s, for every stimulus tested.
-- **The reference is slow.** On a 4-core cloud VM, the reference runs at **0.19× real time**: one simulated second takes about 5 seconds of wall time.
-- **The GPU engine has never run on a GPU.** It compiles for every NVIDIA architecture from Pascal (GTX 10-series) on, and its kernels pass every test in emulation on CPU. Your run may be the first on real hardware.
-- **Our prediction is roughly 7–15× real time** on a mid-range card such as an RTX 3060, 4060 or 4070. It is preregistered, which means written down before anyone measured it. We might be wrong, and that is worth knowing too.
+- **The model is reproduced exactly.** In double precision on the CPU, the ASCEND engine fed the same input as the published reference model (Brian2) emits the **same spikes, spike for spike**, on the full brain, for every stimulus tested. The GPU engine is checked against it on your own machine.
+- **Reference speed:** the original model runs at **0.19× real time** on a 4-core machine. One simulated second takes about 5 seconds.
+- **The ASCEND GPU engine** runs each 1,000-step chunk of simulation as a single CUDA Graph. We predict roughly **7–15× real time** on a mid-range card such as an RTX 3060, 4060 or 4070. The prediction is preregistered, meaning it was written down before any GPU measurement.
+- **Results board:** no GPU results are published yet. The first submissions will set the numbers.
 
-Everything here is preregistered and every result is published, including misses. See [`PREREG_PHASE1.md`](PREREG_PHASE1.md) and [`REPORT_PHASE1.md`](REPORT_PHASE1.md).
+Everything is preregistered and every result is published, including misses. See [`PREREG_PHASE1.md`](PREREG_PHASE1.md) and [`REPORT_PHASE1.md`](REPORT_PHASE1.md).
 
 ## What you need
 
@@ -32,29 +30,29 @@ python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.jso
 `fetch_data.py` downloads the connectome (about 104 MB) and checks it against SHA-256 checksums. `bench.py` then runs four stages:
 
 1. **Self-test:** compares your GPU against the CPU engine on a small network.
-2. **Speed:** 5 timed one-second runs of the full brain.
+2. **Speed:** 5 timed one-second runs of the full brain. You get your real-time factor.
 3. **Statistical fidelity:** 4 stimuli × 30 trials, compared with the published reference rates.
 4. **Same-input check:** your GPU and your CPU get identical input and must produce the same spikes.
 
-## Submit it
+## Share your result
 
-Open a **[Benchmark result](../../../issues/new?template=benchmark_result.yml)** issue and paste `bench.json` unedited. Please send every result:
+Open a **[Benchmark result](../../../issues/new?template=benchmark_result.yml)** issue and paste `bench.json` unedited. Every result goes on the record:
 
-- **Slow:** still a data point.
-- **Crashed:** paste the error. A first-run crash on your GPU is one of the most useful reports we can get.
+- **Any speed:** fast or slow, every GPU adds a data point.
+- **Errors:** paste the output. A report from new hardware is just as useful as a number.
 - **Laptop:** tell us the power limit if you know it.
-- **Data-centre or workstation card** (A100, H100, L4, T4, RTX A-series and so on): published, but it doesn't count toward the consumer-GPU claim.
+- **Data-centre or workstation card** (A100, H100, L4, T4, RTX A-series and so on): welcome and published, but listed separately from consumer GPUs.
 
-`bench.json` records your hardware (GPU, CPU, RAM, OS) and software versions so that results can be compared. It contains nothing else about you.
+`bench.json` records your hardware (GPU, CPU, RAM, OS) and software versions so that results can be compared. It contains nothing else about you. Each submission is credited in the results.
 
 ## What counts
 
 The real-time claim is earned only when all of this holds:
 
 1. A consumer-GPU run on an unmodified checkout shows `S1_rtf_median_ge_1`, `F_fidelity_suite` and `G_same_input` all `true`.
-2. A second person on a different GPU model reproduces it.
+2. Someone else reproduces it on a different GPU model.
 
-Until then, the README says nothing about real time. Each submission is credited in the results.
+The README states only what those runs show.
 
 ## About the model
 
