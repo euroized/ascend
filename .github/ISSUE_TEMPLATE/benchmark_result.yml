@@ -1,0 +1,53 @@
+name: Benchmark result
+description: Submit a scripts/bench.py result from your hardware.
+title: "[bench] <GPU or CPU model>: RTF <median>"
+labels: ["benchmark"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for running the benchmark. Every result counts, including slow ones and failures.
+        Run it on a clean checkout with nothing else heavy running:
+
+        ```bash
+        python scripts/fetch_data.py
+        python scripts/bench.py --out bench.json
+        ```
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      description: GPU (or CPU) model, plus anything bench.json may miss, such as a laptop power limit or cloud instance type.
+      placeholder: "RTX 4070 Laptop (115 W), Ryzen 9 7940HS, 32 GB"
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      description: The exact command you ran.
+      placeholder: python scripts/bench.py --out bench.json
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: bench.json
+      description: Paste the whole file. Do not edit it.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Errors, warnings, anything unusual. Optional.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checks
+      options:
+        - label: I ran the command above on an unmodified checkout ("repo.dirty" is false in bench.json).
+          required: true
+        - label: "\"valid_submission\" is true (not a --synthetic run)."
+          required: true
