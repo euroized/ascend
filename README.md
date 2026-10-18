@@ -4,6 +4,8 @@
 
 Connectome-constrained fly brain, real-time on one GPU, reverse engineered, then learning to improve how it learns.
 
+> **Try it on your GPU.** Run the whole 138,639-neuron fly brain model on your own NVIDIA card and add your result to the public record. One command, about 20 minutes. **[Join in on issue #7](https://github.com/recurse-root/ascend/issues/7)**
+
 ASCEND is an open, preregistered project in three phases. Each phase is earned separately, and nothing below is claimed until its preregistered criteria pass on real hardware.
 
 | Phase | Goal | Status |
