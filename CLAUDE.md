@@ -18,7 +18,7 @@ None of these is achieved until its preregistered criteria pass. The README only
 - **CI** runs pytest on CPU for every push. Tests must not need downloaded data.
 - **Language.** Say "connectome-constrained model". Never claim consciousness or sentience, never call the model alive, and never call it a brain upload.
 - **Credit prior art:** Shiu et al. 2024, FlyWire (Dorkenwald et al. 2024; Schlegel et al. 2024), NeuroMechFly/FlyGym 2.x, Eon Systems, erojasoficial-byte/fly-brain.
-- **Private module.** The maintainer's self-improvement module is private and never enters this repo. Phase 3 reaches it only through `ascend/gate/adapter.py`, which has a public stub so the repo runs without it. Do not add private code, records or results.
+- **Private module.** The maintainer's self-improvement module is private and never enters this repo. Phase 3 will reach it only through `ascend/gate/adapter.py`, which will ship with a public stub so the repo runs without it. Do not add private code, records or results.
 - **Workflow.** Work on a branch and open PRs into `main`; the maintainer merges. Stop and ask before changing a prereg, adding a README claim, or starting any run over 2 hours.
 
 ## Layout
