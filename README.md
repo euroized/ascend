@@ -64,10 +64,10 @@ The real-time claim (Phase 1) needs at least one consumer-GPU run that passes ev
 | [`ascend/engine/`](ascend/engine) | The ASCEND engine: exact CPU engine (NumPy), CUDA kernels and CUDA Graph host code, CPU emulator of the kernels |
 | [`ascend/reference/`](ascend/reference) | Shiu et al.'s `model.py`, vendored verbatim (hash-pinned), plus a seeded, timed wrapper |
 | [`ascend/`](ascend) | Data fetching and verification, stimulus sets, rates, hardware capture |
-| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py` |
+| [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`, `check_submission.py` |
 | [`data/`](data) | Data manifest and stimulus neuron IDs (FlyWire v630 and v783) |
 | [`docs/`](docs) | Preregistrations and design notes |
-| [`results/`](results) | Small JSON results, each tied to a preregistration |
+| [`results/`](results) | Small JSON results, each tied to a preregistration, and the [community GPU results board](results/community/README.md) |
 
 ## Prior art and credits
 

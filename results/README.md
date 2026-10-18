@@ -29,4 +29,11 @@ Preregistration: [`docs/PREREG_PHASE1.md`](../docs/PREREG_PHASE1.md). Report: [`
 
 ## Community benchmarks
 
-Benchmark runs submitted through the [Benchmark result](../../../issues/new?template=benchmark_result.yml) issue template will be collected here once Phase 1 starts.
+Benchmark runs submitted through the [Benchmark result](../../../issues/new?template=benchmark_result.yml) issue template are stored in [`community/`](community) and listed on the [results board](community/README.md). Every submission is listed, whatever its outcome.
+
+`scripts/check_submission.py` checks each one against the Phase 1 preregistration. It recomputes the real-time factor from the raw run times and does not trust the file's own `criteria` block. It also confirms that the checkout was unmodified, that the commit is in this repository, that the connectome matches the manifest, and that the GPU is a consumer card.
+
+```bash
+python scripts/check_submission.py bench.json                                   # check only
+python scripts/check_submission.py bench.json --issue 12 --submitter octocat --add  # store it and rebuild the board
+```

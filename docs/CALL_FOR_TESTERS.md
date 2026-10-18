@@ -7,7 +7,7 @@ ASCEND simulates a connectome-constrained model of the entire adult fruit fly br
 - **The model is reproduced exactly.** In double precision on the CPU, the ASCEND engine fed the same input as the published reference model (Brian2) emits the **same spikes, spike for spike**, on the full brain, for every stimulus tested. The GPU engine is checked against it on your own machine.
 - **Reference speed:** the original model runs at **0.19× real time** on a 4-core machine. One simulated second takes about 5 seconds.
 - **The ASCEND GPU engine** runs each 1,000-step chunk of simulation as a single CUDA Graph. We predict roughly **7–15× real time** on a mid-range card such as an RTX 3060, 4060 or 4070. The prediction is preregistered, meaning it was written down before any GPU measurement.
-- **Results board:** no GPU results are published yet. The first submissions will set the numbers.
+- **[Results board](../results/community/README.md):** no GPU results are published yet. The first submissions will set the numbers.
 
 Everything is preregistered and every result is published, including misses. See [`PREREG_PHASE1.md`](PREREG_PHASE1.md) and [`REPORT_PHASE1.md`](REPORT_PHASE1.md).
 
@@ -42,6 +42,8 @@ Open a **[Benchmark result](../../../issues/new?template=benchmark_result.yml)**
 - **Errors:** paste the output. A report from new hardware is just as useful as a number.
 - **Laptop:** tell us the power limit if you know it.
 - **Data-centre or workstation card** (A100, H100, L4, T4, RTX A-series and so on): welcome and published, but listed separately from consumer GPUs.
+
+Each submission is checked by `scripts/check_submission.py` and listed on the [results board](../results/community/README.md). You can run the same check yourself first: `python scripts/check_submission.py bench.json`.
 
 `bench.json` records your hardware (GPU, CPU, RAM, OS) and software versions so that results can be compared. It contains nothing else about you. Each submission is credited in the results.
 
