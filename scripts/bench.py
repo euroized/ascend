@@ -18,8 +18,9 @@ Engines:
     --engine ascend --device cuda       ASCEND engine on an NVIDIA GPU (needs CuPy)
     --engine ascend --device cpu        ASCEND engine on the CPU (float64, exact)
 
---fidelity also runs the preregistered statistical fidelity suite (docs/PREREG_PHASE1.md):
-30 trials of each reference condition, compared with results/phase0/reference_rates.json.
+--fidelity also runs the preregistered fidelity tiers (docs/PREREG_PHASE1.md):
+  F  30 trials of each reference condition, compared with results/phase0/reference_rates.json;
+  G  (GPU only) identical kicks into this engine and the CPU float32 engine, spike sets compared.
 A Phase 1 submission is
 
     python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.json
@@ -172,7 +173,7 @@ def main() -> int:
     mean, std = analysis.rates(spikes, runner.n_neurons, args.duration)
     med = statistics.median(rtf)
 
-    fidelity = None
+    fidelity = same_input = None
     if args.fidelity:
         if args.engine != "ascend" or args.synthetic:
             raise SystemExit("--fidelity needs --engine ascend on the full connectome")
@@ -183,6 +184,13 @@ def main() -> int:
         fidelity = fid.suite(
             lambda st: runner.make(fid.stimulated(st, path_comp)), runner.n_neurons, runner.params.dt, fly_ids
         )
+        if args.device != "cpu":
+            from ascend import sameinput  # noqa: PLC0415
+
+            print("same-input tier: 3 workloads vs the CPU float32 engine ...", flush=True)
+            same_input = sameinput.compare(
+                runner.make, runner.net, runner.params, lambda w: fid.stimulated(w, path_comp)
+            )
     criteria = {"phase": 0, "note": "Phase 0 baseline, no pass/fail."}
     if args.engine == "ascend":
         criteria = {
@@ -190,6 +198,7 @@ def main() -> int:
             "prereg": "docs/PREREG_PHASE1.md",
             "S1_rtf_median_ge_1": med >= RTF_TARGET,
             "F_fidelity_suite": None if fidelity is None else fidelity["pass"],
+            "G_same_input": None if same_input is None else same_input["pass"],
             "consumer_gpu": "reviewed by maintainers from hardware.gpus",
         }
     result = {
@@ -224,6 +233,7 @@ def main() -> int:
         },
         "selftest": selftest,
         "fidelity_suite": fidelity,
+        "same_input": same_input,
         "criteria": criteria,
         "valid_submission": not args.synthetic,
         "hardware": hardware.info(),
@@ -235,6 +245,8 @@ def main() -> int:
     print(f"RTF median {med:.4f}" + (f" ({1 / med:.1f}x slower than real time)" if med < 1 else ""))
     if fidelity is not None:
         print(f"fidelity suite: {'PASS' if fidelity['pass'] else 'FAIL'}")
+    if same_input is not None:
+        print(f"same-input tier: {'PASS' if same_input['pass'] else 'FAIL'}")
     if tmp:
         tmp.cleanup()
     return 0

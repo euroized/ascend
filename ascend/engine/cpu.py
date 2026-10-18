@@ -81,8 +81,17 @@ class EventInput:
 
 
 class CPUEngine:
-    def __init__(self, net: Network, params: Params, stimulated: Iterable[int] = (), dtype=np.float64):
+    def __init__(
+        self,
+        net: Network,
+        params: Params,
+        stimulated: Iterable[int] = (),
+        dtype=np.float64,
+        shuffle_seed: int | None = None,
+    ):
+        """shuffle_seed: sum each step's synaptic input in a random order, as GPU atomics may (a control)."""
         self.net, self.p, self.dtype = net, params, np.dtype(dtype)
+        self._shuffle = None if shuffle_seed is None else np.random.default_rng(shuffle_seed)
         self.stim = np.asarray(sorted(set(stimulated)), dtype=np.int64)
         if net.n_neurons >= 1 << 20:
             raise ValueError("neuron indices must fit in 20 bits (rng.kicks key layout)")
@@ -128,6 +137,8 @@ class CPUEngine:
             arriving = self._queue.pop(step, None)
             if arriving is not None:
                 syn = self.net.out_synapses(arriving)
+                if self._shuffle is not None:
+                    syn = self._shuffle.permutation(syn)
                 post = self.net.post[syn]
                 keep = nr[post]
                 np.add.at(g, post[keep], self.weight[syn][keep])
