@@ -12,7 +12,7 @@ ASCEND is an open, preregistered project in three phases. Each phase is earned s
 |---|---|---|
 | 0. Baseline | Wrap the Shiu et al. 2024 reference model, reproduce sugar → MN9, measure its speed | **Complete.** Sugar → MN9 reproduced (14/14 preregistered checks). Reference RTF 0.189 on a 4-vCPU VM ([report](docs/REPORT_PHASE0.md), [prereg](docs/PREREG_PHASE0.md)) |
 | 1. Boot | Whole FlyWire v783 brain (138,639 neurons, 54.5 M synapses) at real-time factor ≥ 1.0 on one consumer NVIDIA GPU, fidelity-matched to the reference | In progress: engine built, awaiting GPU runs ([prereg](docs/PREREG_PHASE1.md), [design](docs/PHASE1_ENGINE_PROPOSAL.md)) |
-| 2. Decompile | Perturb every neuron and map its effect on every other (an in-silico effectome), validated against known pathways | Not started |
+| 2. Decompile | Perturb every neuron and map its effect on every other (an in-silico effectome), validated against known pathways | Not started. Design proposed, awaiting approval ([proposal](docs/PHASE2_EFFECTOME_PROPOSAL.md)) |
 | 3. Ascend | Wiring frozen; evolve the learning rules, gated and tested against frozen and random-rule controls | Not started |
 
 This is a connectome-constrained model: a network of leaky integrate-and-fire neurons wired according to the FlyWire connectome. It is not a brain upload, and we make no claims about consciousness or sentience.
