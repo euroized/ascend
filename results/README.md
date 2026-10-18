@@ -14,7 +14,7 @@ Preregistration: [`docs/PREREG_PHASE0.md`](../docs/PREREG_PHASE0.md). Report: [`
 
 ## Phase 1: engine (build-VM tiers)
 
-Preregistration: [`docs/PREREG_PHASE1.md`](../docs/PREREG_PHASE1.md). Interim report: [`docs/REPORT_PHASE1.md`](../docs/REPORT_PHASE1.md).
+Preregistration: [`docs/PREREG_PHASE1.md`](../docs/PREREG_PHASE1.md). Report: [`docs/REPORT_PHASE1.md`](../docs/REPORT_PHASE1.md).
 
 | File | Produced by | Contents |
 |---|---|---|
@@ -23,6 +23,9 @@ Preregistration: [`docs/PREREG_PHASE1.md`](../docs/PREREG_PHASE1.md). Interim re
 | [`phase1/fidelity_cpu_float32_exact.json`](phase1/fidelity_cpu_float32_exact.json) | `scripts/fidelity_check.py` | F-f32: pass |
 | [`phase1/fidelity_cpu_float64_weight95.json`](phase1/fidelity_cpu_float64_weight95.json) | `scripts/fidelity_check.py` | Negative control, weights × 0.95: fails (as required) |
 | [`phase1/fidelity_cpu_float64_delay17.json`](phase1/fidelity_cpu_float64_delay17.json) | `scripts/fidelity_check.py` | Negative control, delay 17 steps: **passes (miss)**, so the F tier is inadequate as registered |
+| [`phase1/sameinput_shuffle{3,4}.json`](phase1) | `scripts/sameinput_check.py` | G-pos (Amendment 1): Jaccard 1.0000, pass |
+| [`phase1/sameinput_delay17.json`](phase1/sameinput_delay17.json) | `scripts/sameinput_check.py` | G-neg-delay: fails (as required) |
+| [`phase1/sameinput_weight95.json`](phase1/sameinput_weight95.json) | `scripts/sameinput_check.py` | G-neg-weight: fails (as required) |
 
 ## Community benchmarks
 

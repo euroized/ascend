@@ -1,4 +1,4 @@
-# Phase 1 report (interim): build-VM tiers
+# Phase 1 report: build-VM tiers
 
 **Preregistration:** [`PREREG_PHASE1.md`](PREREG_PHASE1.md), registered in commit `903ec99` before any of the measurements below.
 **Runs:** 2026-10-18, on the 4-vCPU build VM (no GPU). Hardware details are recorded in every result file.
@@ -13,9 +13,14 @@
 | **F-f32**: CPU float32 engine, fidelity suite | **PASS** (every check) | pass |
 | **F-neg-weight**: weights × 0.95 | **FAIL** (3 of 4 conditions) | fail ✓ |
 | **F-neg-delay**: delay 17 steps instead of 18 | **PASS**: **miss** | fail ✗ |
+| **G-pos**: random summation order, seeds 3 and 4 (Amendment 1) | **PASS**: Jaccard 1.0000 in all workloads | pass ✓ |
+| **G-neg-delay**: delay 17 steps (Amendment 1) | **FAIL**: Jaccard 0.135 / 0.530 / 0.617 | fail ✓ |
+| **G-neg-weight**: weights × 0.95 (Amendment 1) | **FAIL**: Jaccard 0.135 / 0.524 / 0.622 | fail ✓ |
 | **S**: GPU speed | not yet run (needs testers) | RTF ≈ 7–15 |
 
-**Consequence (preregistered rule):** a negative control passed, so the statistical fidelity tier is **declared inadequate**. The real-time claim cannot be made until a dated amendment fixes the tier. A proposed amendment is in section 5. It is **not applied**, because changing a preregistration needs the maintainer's approval.
+**What happened.** A negative control passed the original statistical tier, so under the preregistered rule F was declared inadequate. That miss stands. A dated Amendment 1 added a same-input tier G, with its own controls, before any G run. The maintainer delegated the decision. All G controls behaved as required.
+
+**Claim status.** Rules 1 and 2 of the amended claim rule are met on the build VM. Rules 3 and 4 need consumer-GPU submissions that show S1, F and G all true, plus an independent reproduction. **No real-time claim is made yet.**
 
 ## 1. E: exact tier
 
@@ -69,7 +74,7 @@ To design a fix, the CPU float32 engine was run with identical hash-RNG kicks (s
 
 Randomising the order of summation leaves float32 spike trains unchanged. That is the only freedom a correct GPU run has, since GPU atomics add in arbitrary order. A delay or weight error makes the trains diverge massively. Changing precision also changes exact spike timing, so a same-input comparison is only valid float32 against float32.
 
-## 5. Proposed amendment (awaiting maintainer approval, not applied)
+## 5. Amendment 1 (applied 2026-10-18, commit `97d6427`)
 
 Add a **G tier: same input, same spikes**. The GPU engine (float32) and the CPU engine (float32) get identical hash-RNG kicks on the full brain for 1.0 s, for sugar, bitter and JONs at 150 Hz with seed 0. **Pass:** Jaccard of (step, neuron) spike events ≥ 0.99 in all 3 workloads. `bench.py --fidelity` would run it on the tester's machine. The CPU reference takes about 10–30 s per workload.
 
@@ -85,6 +90,19 @@ The amendment would also preregister **G controls on the build VM**. The CPU flo
 
 The claim rule would require E, F-pos, F-f32, the G controls, and a consumer-GPU submission passing S1, F and G, plus an independent reproduction.
 
+### Formal G controls (fresh seeds: kicks seed 1, permutations 3 and 4)
+
+CPU float32 variants are compared with the CPU float32 engine as built, with identical kicks, on the full brain for 1 s (`scripts/sameinput_check.py`, `results/phase1/sameinput_*.json`).
+
+| Run | sugar | bitter | JONs | Required | Outcome |
+|---|---|---|---|---|---|
+| G-pos, permutation seed 3 | 1.0000 (13,561 spikes) | 1.0000 (4,730) | 1.0000 (28,628) | ≥ 0.99 all | ✓ |
+| G-pos, permutation seed 4 | 1.0000 | 1.0000 | 1.0000 | ≥ 0.99 all | ✓ |
+| G-neg-delay | 0.135 | 0.530 | 0.617 | < 0.99 all | ✓ |
+| G-neg-weight | 0.135 | 0.524 | 0.622 | < 0.99 all | ✓ |
+
+Under bitter, the delay error leaves the spike count unchanged (4,730 vs 4,730) but moves spike times. That is exactly the error F could not see.
+
 ## 6. Bugs found and fixed during these runs (disclosed)
 
 1. **`fidelity_check.py` crashed when saving its first condition**, because three checks returned `numpy.bool_`, which JSON cannot serialise (`9d38252`). Nothing had been printed or saved, so no results were seen. The criteria were unchanged, and a regression test now covers it.
@@ -95,4 +113,6 @@ The claim rule would require E, F-pos, F-f32, the G controls, and a consumer-GPU
 ```bash
 python scripts/exact_check.py --stimulus sugar --out exact_sugar.json            # also bitter, jon_all, none
 python scripts/fidelity_check.py --device cpu --dtype float64 --variant exact    # also float32; delay17, weight95
+python scripts/sameinput_check.py --variant shuffle3                              # also shuffle4, delay17, weight95
+python scripts/bench.py --engine ascend --device cuda --fidelity --out bench.json # GPU submission: S, F and G
 ```
