@@ -1,12 +1,12 @@
 # ascend
 
-[![CI](https://github.com/recurse-root/ascend/actions/workflows/ci.yml/badge.svg)](https://github.com/recurse-root/ascend/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/euroized/ascend/actions/workflows/ci.yml/badge.svg)](https://github.com/euroized/ascend/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Connectome-constrained fly brain, real-time on one GPU, reverse engineered, then learning to improve how it learns.
 
-> **Try it on your GPU.** Run the whole 138,639-neuron fly brain model on your own NVIDIA card and add your result to the public record. One command, about 20 minutes. **[Join in on issue #7](https://github.com/recurse-root/ascend/issues/7)**
+> **Try it on your GPU.** Run the whole 138,639-neuron fly brain model on your own NVIDIA card and add your result to the public record. One command, about 20 minutes. **[Join in on issue #7](https://github.com/euroized/ascend/issues/7)**
 
-**[Technical report](docs/TECHNICAL_REPORT.md)** · **[Demo: one second of fly brain](docs/demo/index.html)** · **[GPU results board](results/community/README.md)**
+**[Watch the demo](https://euroized.github.io/ascend/demo/)** · **[Technical report](docs/TECHNICAL_REPORT.md)** · **[GPU results board](results/community/README.md)** · **[Project site](https://euroized.github.io/ascend/)**
 
 ASCEND is an open, preregistered project in three phases. Each phase is earned separately, and nothing below is claimed until its preregistered criteria pass on real hardware.
 
@@ -19,12 +19,21 @@ ASCEND is an open, preregistered project in three phases. Each phase is earned s
 
 This is a connectome-constrained model: a network of leaky integrate-and-fire neurons wired according to the FlyWire connectome. It is not a brain upload, and we make no claims about consciousness or sentience.
 
+## What has been measured
+
+- **Exact reproduction.** On the CPU in double precision, the ASCEND engine and the published Brian2 model emit identical spikes on the full brain for every stimulus tested ([Phase 1 report](docs/REPORT_PHASE1.md)).
+- **The wiring does the work.** The model has no trained parameters. With its real FlyWire wiring, sugar input drives the feeding motor neuron MN9 (70 Hz) and antennal input drives its descending neurons DNg62 and DNge078 (20 Hz), with no cross-talk.
+  - We compared it with nine matched null networks: the same neurons, the same 15.1 million connections and the same synaptic weights, but with the wiring shuffled. None of them ever drives either readout.
+  - The test was preregistered before any null network ran. See [section 7 of the technical report](docs/TECHNICAL_REPORT.md#7-real-wiring-against-matched-null-networks).
+- **Every unit is a real cell.** Each model neuron is a named FlyWire neuron, so a model result is an experiment a fly lab can run with genetic tools.
+- **Not yet measured:** real-time speed on a GPU. That is what the [call for testers](docs/CALL_FOR_TESTERS.md) is for.
+
 ## Quick start
 
 Requires Python ≥ 3.10 and a C++ compiler (Brian2 compiles generated code with Cython).
 
 ```bash
-git clone https://github.com/recurse-root/ascend && cd ascend
+git clone https://github.com/euroized/ascend && cd ascend
 pip install -e ".[test]"
 pytest -q                       # CPU only, no downloads
 python scripts/fetch_data.py    # FlyWire v783 connectome, ~104 MB, SHA-256 verified
@@ -68,7 +77,7 @@ The real-time claim (Phase 1) needs at least one consumer-GPU run that passes ev
 | [`ascend/`](ascend) | Data fetching and verification, stimulus sets, rates, hardware capture |
 | [`scripts/`](scripts) | `fetch_data.py`, `bench.py`, `exact_check.py`, `fidelity_check.py`, `reference_rates.py`, `reproduce_sugar_mn9.py`, `map_stimuli.py`, `check_submission.py`, `baseline_check.py`, `make_demo.py` |
 | [`data/`](data) | Data manifest and stimulus neuron IDs (FlyWire v630 and v783) |
-| [`docs/`](docs) | Technical report, preregistrations, reports and design notes; [`docs/demo/`](docs/demo) is the demo viewer |
+| [`docs/`](docs) | Technical report, preregistrations, reports and design notes. Also the [project site](https://euroized.github.io/ascend/) (GitHub Pages, served from this folder) and its [demo](docs/demo) |
 | [`results/`](results) | Small JSON results, each tied to a preregistration, and the [community GPU results board](results/community/README.md) |
 
 ## Prior art and credits
