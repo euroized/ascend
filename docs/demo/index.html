@@ -38,6 +38,7 @@ body {
 }
 .wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 18px; }
 header { display: grid; gap: 6px; }
+.eyebrow a { color: inherit; }
 .eyebrow { font: 500 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
 h1 {
   margin: 0;
@@ -118,7 +119,7 @@ pre { margin: 0; overflow-x: auto; font: 12px/1.5 var(--mono); color: var(--text
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">ASCEND · FlyWire v783 · 138,639 neurons</div>
+    <div class="eyebrow"><a href="../">ASCEND</a> · FlyWire v783 · 138,639 neurons</div>
     <h1>One Second of Fly Brain</h1>
     <p class="lede">A recorded run of the whole-brain <strong>connectome-constrained model</strong> of the adult fruit fly (Shiu et al. 2024 dynamics, FlyWire wiring). Pick an input and watch it travel through the brain. Every dot is a neuron at its real position. Neurons flash as they spike. The model has <strong>no trained parameters</strong>: what you see comes from the wiring.</p>
   </header>
@@ -181,7 +182,7 @@ pre { margin: 0; overflow-x: auto; font: 12px/1.5 var(--mono); color: var(--text
     </div>
     <div>
       <h3>Reproduce it</h3>
-      <pre>git clone https://github.com/recurse-root/ascend
+      <pre>git clone https://github.com/euroized/ascend
 cd ascend && pip install -e ".[test]"
 python scripts/fetch_data.py
 python scripts/fetch_data.py --group provenance
@@ -191,7 +192,7 @@ python scripts/make_demo.py</pre>
     <div>
       <h3>Credits</h3>
       <p>Model: Shiu et al. 2024, <em>Nature</em> 634. Connectome and annotations: FlyWire (Dorkenwald et al. 2024; Schlegel et al. 2024). This is a connectome-constrained model, not a brain upload, and it makes no claim to be conscious.</p>
-      <p><a href="https://github.com/recurse-root/ascend">github.com/recurse-root/ascend</a></p>
+      <p><a href="https://github.com/euroized/ascend">github.com/euroized/ascend</a></p>
     </div>
   </div>
 </div>

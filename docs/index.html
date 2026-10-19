@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ASCEND</title>
+<meta name="description" content="ASCEND: an open, preregistered connectome-constrained model of the whole adult fruit fly brain (FlyWire, 138,639 neurons), built to run in real time on one consumer GPU.">
+<meta property="og:title" content="ASCEND">
+<meta property="og:description" content="The whole fruit fly brain as a connectome-constrained model: 138,639 neurons, no trained parameters, verified spike for spike. Watch one second of it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: one column, hero with the brain field drawn from the demo's recorded data,
+   then measured facts, phase status and links. Same instrument palette as the demo. */
+:root {
+  --ink: #0a0e16;
+  --panel: #111725;
+  --rule: #222c40;
+  --text: #dde4f0;
+  --muted: #8592a8;
+  --amber: #f3a93b;
+  --done: #7fcf9a;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body {
+  margin: 0; background: var(--ink); color: var(--text); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+a { color: var(--amber); }
+a:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+.eyebrow { font: 500 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+h1 { margin: 0; font: 800 clamp(48px, 10vw, 104px)/0.92 var(--display); font-stretch: 75%; letter-spacing: -0.01em; }
+h2 { margin: 0; font: 700 13px/1.2 var(--display); font-stretch: 85%; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.hero { display: grid; gap: 18px; }
+.tagline { margin: 0; max-width: 46ch; font-size: clamp(18px, 2.4vw, 22px); line-height: 1.45; text-wrap: balance; }
+.field { position: relative; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: #070a10; aspect-ratio: 16 / 7; max-width: 100%; }
+.field canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+figure { margin: 0; display: grid; gap: 8px; }
+figcaption { font: 11px/1.4 var(--mono); color: var(--muted); }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-block; padding: 11px 16px; border-radius: 7px; font: 600 14px/1 var(--body); text-decoration: none; border: 1px solid var(--rule); color: var(--text); background: var(--panel); }
+.btn.primary { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.fact { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.fact b { font: 600 28px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.fact p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.fact p strong { color: var(--text); font-weight: 500; }
+.phases { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.phase { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 16px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.phase .name { font: 700 18px/1.2 var(--display); font-stretch: 85%; }
+.phase .goal { color: var(--muted); font-size: 14.5px; }
+.pill { font: 500 11px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 8px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); white-space: nowrap; }
+.pill.done { color: var(--done); border-color: color-mix(in srgb, var(--done) 45%, transparent); }
+.pill.live { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+@media (max-width: 640px) {
+  .phase { grid-template-columns: minmax(0, 1fr) auto; }
+  .phase .goal { grid-column: 1 / -1; grid-row: 2; }
+  .phase .pill { grid-column: 2; grid-row: 1; justify-self: end; }
+}
+.section { display: grid; gap: 14px; }
+footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--rule); padding-top: 18px; display: grid; gap: 6px; }
+footer p { margin: 0; max-width: 80ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Open · Preregistered · FlyWire v783</div>
+    <h1>ASCEND</h1>
+    <p class="tagline">The whole adult fruit fly brain as a connectome-constrained model: 138,639 neurons wired by 15 million measured connections. It is built to run in real time on one consumer GPU.</p>
+    <figure>
+      <div class="field"><canvas id="brain" aria-label="Frontal projection of the fly brain, with the neurons that fired during one second of sugar input highlighted"></canvas></div>
+      <figcaption>Frontal view. Each faint dot is a neuron at its FlyWire position. Lit: the 361 neurons that fired during one second of sugar input.</figcaption>
+    </figure>
+    <div class="cta">
+      <a class="btn primary" href="demo/">Watch one second of fly brain</a>
+      <a class="btn" href="https://github.com/euroized/ascend/issues/7">Run it on your GPU</a>
+      <a class="btn" href="https://github.com/euroized/ascend">Source on GitHub</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>What has been measured</h2>
+    <div class="facts">
+      <div class="fact"><b>Spike for spike</b><p>In double precision on the CPU, the ASCEND engine and the published Brian2 model of Shiu et al. 2024 emit <strong>identical spikes</strong> on the full brain for every stimulus tested.</p></div>
+      <div class="fact"><b>0 trained</b><p>No parameter is fitted. The weights are synapse counts measured by electron microscopy, signed by neurotransmitter, times one constant.</p></div>
+      <div class="fact"><b>6/6 vs 4/6</b><p>Real wiring routes sugar to the feeding motor neuron and antennal input to its descending neurons. <strong>Nine matched null networks</strong> with the same neurons and weights but shuffled wiring never do. This test was preregistered.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Phases</h2>
+    <div class="phases">
+      <div class="phase"><span class="name">0 · Baseline</span><span class="goal">Reproduce Shiu et al.'s sugar → MN9 result and measure the reference model's speed.</span><span class="pill done">Complete</span></div>
+      <div class="phase"><span class="name">1 · Boot</span><span class="goal">The whole brain at real-time speed on one consumer NVIDIA GPU, fidelity-matched to the reference.</span><span class="pill live">Awaiting GPU runs</span></div>
+      <div class="phase"><span class="name">2 · Decompile</span><span class="goal">Perturb every neuron and map its effect on every other (an effectome), validated against known pathways.</span><span class="pill">Proposed</span></div>
+      <div class="phase"><span class="name">3 · Ascend</span><span class="goal">Wiring frozen. Evolve learning rules behind a gate, against frozen and random-rule controls.</span><span class="pill">Not started</span></div>
+    </div>
+    <p style="margin:0;color:var(--muted);font-size:14.5px">Read the <a href="https://github.com/euroized/ascend/blob/main/docs/TECHNICAL_REPORT.md">technical report</a>, the <a href="https://github.com/euroized/ascend/tree/main/docs">preregistrations</a>, or the <a href="https://github.com/euroized/ascend/blob/main/results/community/README.md">GPU results board</a>.</p>
+  </section>
+
+  <footer>
+    <p>ASCEND builds on Shiu et al. 2024 (<em>Nature</em> 634) for the model; FlyWire (Dorkenwald et al. 2024; Schlegel et al. 2024) for the connectome; and NeuroMechFly/FlyGym, Eon Systems and erojasoficial-byte/fly-brain for related work.</p>
+    <p>This is a connectome-constrained model. It is not a brain upload, and it makes no claim to be conscious. MIT licensed.</p>
+  </footer>
+</div>
+
+<script src="demo/data.js"></script>
+<script>
+(() => {
+  const D = window.ASCEND_DEMO, c = document.getElementById("brain");
+  if (!D || !c) return;
+  function draw() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), r = c.getBoundingClientRect();
+    c.width = Math.max(1, Math.round(r.width * dpr)); c.height = Math.max(1, Math.round(r.height * dpr));
+    const g = c.getContext("2d"), [ex, ey] = D.extent, W = c.width, H = c.height;
+    const k = Math.min(W * 0.9 / ex, H * 0.84 / ey), ox = (W - ex * k) / 2, oy = (H - ey * k) / 2 - H * 0.03;
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = "rgba(150,168,205,0.22)";
+    for (let i = 0; i < D.cloud.length; i += 3) g.fillRect(ox + D.cloud[i] * k, oy + D.cloud[i + 1] * k, dpr, dpr);
+    const run = D.runs.sugar, counts = new Float32Array(run.neurons.length);
+    for (const w of run.who) counts[w]++;
+    let max = 1; for (const v of counts) max = Math.max(max, v);
+    g.globalCompositeOperation = "lighter";
+    run.neurons.forEach((n, i) => {
+      if (n[0] < 0) return;
+      const f = Math.sqrt(counts[i] / max);
+      g.fillStyle = `rgba(${245},${Math.round(130 + 97 * f)},${Math.round(43 + 97 * f)},${0.35 + 0.6 * f})`;
+      g.beginPath(); g.arc(ox + n[0] * k, oy + n[1] * k, (1.2 + 2.6 * f) * dpr * Math.min(1, W / dpr / 800 + 0.3), 0, 6.2832); g.fill();
+    });
+  }
+  draw();
+  new ResizeObserver(draw).observe(c);
+})();
+</script>
+</body>
+</html>
